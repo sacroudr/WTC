@@ -1,0 +1,36 @@
+# Environnement virtuel
+venv/
+.env
+
+# Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Fichiers de logs
+*.log
+
+# Cache et fichiers temporaires
+*.sqlite3
+*.db
+*.bak
+*.tmp
+*.swp
+.cache/
+coverage/
+.tox/
+.mypy_cache/
+.pytest_cache/
+
+# VSCode
+.vscode/
+
+# macOS et Windows
+.DS_Store
+Thumbs.db
+
+# Dépendances Node (si jamais tu ajoutes un frontend)
+node_modules/
+
+# fichiers dotenv d’exemple (à versionner pour aider les autres devs)
+!.env.example
