@@ -2,6 +2,7 @@ from datetime import date
 from fastapi import HTTPException
 from types import SimpleNamespace
 from config.supabase import supabase
+
 from .models import ChauffeurCreate
 from .models import ChauffeurUpdate
 

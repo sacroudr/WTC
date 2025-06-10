@@ -1,9 +1,6 @@
 from fastapi import APIRouter
-from .controller import create_chauffeur
-from .controller import update_chauffeur
-from .controller import delete_chauffeur
-from .controller import get_all_chauffeurs
-from .controller import get_chauffeur_by_id
+
+from .controller import create_chauffeur, get_chauffeur_by_id, get_all_chauffeurs, update_chauffeur, delete_chauffeur
 
 from .models import ChauffeurCreate
 from .models import ChauffeurUpdate

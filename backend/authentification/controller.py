@@ -1,8 +1,10 @@
 from datetime import date
 from fastapi import HTTPException
 from config.supabase import supabase
+
 from .utils import hash_password
 from .utils import verify_password
+
 from .models import UserCreate
 from .models import UserLogin 
 

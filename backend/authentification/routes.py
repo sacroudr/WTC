@@ -1,5 +1,7 @@
 from fastapi import APIRouter
+
 from .models import UserCreate, UserLogin
+
 from .controller import register_user
 from .controller import login_user as login_user_controller  # alias
 
