@@ -7,6 +7,7 @@ from back_office.routes import router as back_office_router
 from client.routes import router as client_router
 from camion.routes import router as camion_router
 from voyage.routes import router as voyage_router
+from suivi_livraison.routes import router as suivi_livraison_router
 
 app = FastAPI()
 
@@ -18,3 +19,4 @@ app.include_router(back_office_router)
 app.include_router(client_router)
 app.include_router(camion_router)
 app.include_router(voyage_router)
+app.include_router(suivi_livraison_router)
