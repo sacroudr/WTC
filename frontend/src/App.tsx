@@ -1,17 +1,24 @@
-import React from 'react';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
+import { Container, Typography, Button, Paper } from '@mui/material';
 
 export default function App() {
   return (
-    <Container maxWidth="sm" style={{ marginTop: 50, textAlign: 'center' }}>
-      <Typography variant="h3" component="h1" gutterBottom>
-        Bienvenue sur MUI !
-      </Typography>
-      <Button variant="contained" color="primary">
-        Clic moi
-      </Button>
+    <Container maxWidth="md" sx={{ mt: 5 }}>
+      <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
+        <Typography variant="h2" gutterBottom>
+          Bienvenue sur ma plateforme
+        </Typography>
+
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          Ceci est un texte de démonstration pour vérifier si le thème fonctionne avec Open Sans pour le texte principal et Montserrat pour les titres.
+        </Typography>
+
+        <Button variant="contained" color="secondary" sx={{ mr: 2 }}>
+          Action principale
+        </Button>
+        <Button variant="outlined" color="primary">
+          Action secondaire
+        </Button>
+      </Paper>
     </Container>
   );
 }
