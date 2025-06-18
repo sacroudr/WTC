@@ -1,24 +1,34 @@
-import { Container, Typography, Button, Paper } from '@mui/material';
+// src/App.tsx
+import React from 'react';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-export default function App() {
+import theme from './theme';
+import Navbar from './layouts/navbar';
+import Accueil from './pages/accueil';
+import Apropos from './pages/apropos';
+import Contact from './pages/contact';
+
+const App: React.FC = () => {
   return (
-    <Container maxWidth="md" sx={{ mt: 5 }}>
-      <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
-        <Typography variant="h2" gutterBottom>
-          Bienvenue sur ma plateforme
-        </Typography>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <Navbar />
 
-        <Typography variant="body1" sx={{ mb: 3 }}>
-          Ceci est un texte de démonstration pour vérifier si le thème fonctionne avec Open Sans pour le texte principal et Montserrat pour les titres.
-        </Typography>
-
-        <Button variant="contained" color="secondary" sx={{ mr: 2 }}>
-          Action principale
-        </Button>
-        <Button variant="outlined" color="primary">
-          Action secondaire
-        </Button>
-      </Paper>
-    </Container>
+        <Routes>
+          {/* 🔁 Redirection automatique vers /accueil */}
+          <Route path="/" element={<Navigate to="/accueil" replace />} />
+          
+          {/* Page d'accueil */}
+          <Route path="/accueil" element={<Accueil />} />
+          <Route path="/a-propos" element={<Apropos />} />
+          <Route path="/contact" element={<Contact />} />
+          
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
-}
+};
+
+export default App;
