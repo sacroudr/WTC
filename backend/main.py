@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from authentification.routes import router as auth_router
 from utilisateur.routes import router as utilisateur_router
@@ -10,6 +11,19 @@ from voyage.routes import router as voyage_router
 from suivi_livraison.routes import router as suivi_livraison_router
 
 app = FastAPI()
+
+# ✅ Autoriser les requêtes du front (ex : localhost:3000 pour React en dev)
+origins = [
+    "http://localhost:5173",        # React dev  # ajoute ton domaine en production si besoin
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # ou ["*"] pour tout autoriser (déconseillé en prod)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Inclure les routes
 app.include_router(auth_router)

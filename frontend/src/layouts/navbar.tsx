@@ -2,11 +2,17 @@
 import React from 'react';
 import { AppBar, Toolbar, Button, Box, Stack, Container } from '@mui/material';
 import { useTheme, alpha } from '@mui/material/styles';
-import { Link } from 'react-router-dom'; // ✅ import Link
+import { Link, useNavigate } from 'react-router-dom'; // ✅ import Link
 import logo from '../assets/WTC_LOGO_JPG_v3_removed.png';
 
 const Navbar: React.FC = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
+  
+   const navigateLogin = () => {
+    navigate("/login");
+  };
+
 
   return (
     <AppBar
@@ -69,6 +75,7 @@ const Navbar: React.FC = () => {
           {/* Boutons Login / Signup */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Button
+              onClick={navigateLogin}
               variant="contained"
               sx={{
                 backgroundColor: theme.palette.primary.main,

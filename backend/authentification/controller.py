@@ -10,12 +10,15 @@ from .models import UserCreate
 from .models import UserLogin 
 
 def register_user(user: UserCreate):
+    # Vérifie si l'utilisateur existe déjà
     existing_user = supabase.table("utilisateur").select("*").eq("mail", user.mail).execute()
     if existing_user.data:
         raise HTTPException(status_code=400, detail="Cet email est déjà utilisé.")
 
+    # Hash du mot de passe
     hashed = hash_password(user.mot_de_passe)
 
+    # Insérer l'utilisateur sans token d'abord
     result = supabase.table("utilisateur").insert({
         "nom": user.nom,
         "prenom": user.prenom,
@@ -26,7 +29,29 @@ def register_user(user: UserCreate):
         "date_creation": date.today().isoformat()
     }).execute()
 
-    return {"message": "Utilisateur créé avec succès", "utilisateur": result.data[0]}
+    # Récupération de l'utilisateur inséré
+    utilisateur = result.data[0]
+
+    # Génération du token
+    token_data = {
+        "id_utilisateur": utilisateur["id_utilisateur"],
+        "mail": utilisateur["mail"],
+        "role": utilisateur["role"]
+    }
+    token = create_access_token(token_data)
+
+    # Mise à jour du token dans la base
+    supabase.table("utilisateur").update({"token": token}).eq("id_utilisateur", utilisateur["id_utilisateur"]).execute()
+
+    # Supprimer le mot de passe pour la réponse
+    utilisateur_sans_mdp = {k: v for k, v in utilisateur.items() if k != "mot_de_passe"}
+    utilisateur_sans_mdp["token"] = token
+
+    return {
+        "message": "Utilisateur créé avec succès",
+        "utilisateur": utilisateur_sans_mdp
+    }
+
 
 # def login_user(user: UserLogin):
 #     # Chercher l'utilisateur dans la base
