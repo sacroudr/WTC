@@ -5,7 +5,7 @@ export type Camion = {
     assurance: string;
     fin_validite_assurance: string;
     visite_technique: string;
-    fin_validite_visite_technique: string;
+    fin_visite_technique: string;
     extincteur: boolean;
-    fin_validite_extincteur: string;
+    fin_extincteur: string;
 };

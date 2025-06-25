@@ -44,11 +44,11 @@ const LoginPage: React.FC = () => {
       localStorage.setItem('token', token);
 
       if (role === 'client') {
-        navigate('/client');
+        navigate('/dashboard_client');
       } else if (role === 'back-office') {
-        navigate('/back-office');
+        navigate('/dashboard_back-office');
       } else if (role === 'super-admin') {
-        navigate('/super-admin');
+        navigate('/dashboard_super-admin');
       } else {
         // setError('Rôle non reconnu');
         console.error('Rôle non reconnu');

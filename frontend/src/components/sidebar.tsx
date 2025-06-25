@@ -18,17 +18,77 @@ import { ListItemButton } from '@mui/material';
 
 const sidebarWidth = 280;
 
+// Fonction pour extraire le rôle depuis le token JWT
+function getUserRoleFromToken(): string | null {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.role || null;
+  } catch (error) {
+    console.error('Erreur lors du décodage du token :', error);
+    return null;
+  }
+}
+
 const Sidebar: React.FC = () => {
+
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
 
-  const menuItems = [
-    { text: 'Tableau de bord', icon: <FiGrid size={22} />, path: '/dashboard' },
-    { text: 'Utilisateurs', icon: <FiUsers size={22} />, path: '/utilisateurs' },
-    { text: 'Camions', icon: <FiTruck size={22} />, path: '/camions' },
-    { text: 'Livraisons', icon: <FiPackage size={22} />, path: '/livraisons' },
-  ];
+  const role = getUserRoleFromToken();
+
+const dashboardPath =
+  role === 'client'
+    ? '/dashboard_client'
+    : role === 'back-office'
+    ? '/dashboard_back-office'
+    : '/dashboard_super-admin';
+
+const utilisateursPath =
+  role === 'super-admin' ? '/utilisateurs_super-admin' : '/utilisateurs_back-office';
+
+const camionsPath =
+  role === 'super-admin' ? '/camions_super-admin' : '/camions_back-office';
+
+const livraisonsPath =
+  role === 'client'
+    ? '/livraisons_client'
+    : role === 'super-admin'
+    ? '/livraisons_super-admin'
+    : '/livraisons_back-office';
+
+const menuItems = [
+  {
+    text: 'Tableau de bord',
+    icon: <FiGrid size={22} />,
+    path: dashboardPath,
+    roles: ['client', 'back-office', 'super-admin'],
+  },
+  {
+    text: 'Utilisateurs',
+    icon: <FiUsers size={22} />,
+    path: utilisateursPath,
+    roles: ['back-office', 'super-admin'],
+  },
+  {
+    text: 'Camions',
+    icon: <FiTruck size={22} />,
+    path: camionsPath,
+    roles: ['back-office', 'super-admin'],
+  },
+  {
+    text: 'Livraisons',
+    icon: <FiPackage size={22} />,
+    path: livraisonsPath,
+    roles: ['client', 'back-office', 'super-admin'],
+  },
+];
+
+
+  const filteredMenuItems = menuItems.filter(item => item.roles.includes(role || ''));
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -60,7 +120,6 @@ const Sidebar: React.FC = () => {
           alignItems: 'center',
           minHeight: 70,
           px: 2,
-          // borderBottom: `1px solid ${theme.palette.text.secondary}40`,
         }}
       >
         <Box
@@ -83,14 +142,12 @@ const Sidebar: React.FC = () => {
           }}
           onClick={() => navigate('/dashboard')}
         />
-
       </Toolbar>
 
       <List sx={{ flexGrow: 1, mt: 1 }}>
-        {menuItems.map(({ text, icon, path }) => (
+        {filteredMenuItems.map(({ text, icon, path }) => (
           <ListItemButton
             key={text}
-            // button
             onClick={() => navigate(path)}
             sx={{
               px: 3,
@@ -138,8 +195,6 @@ const Sidebar: React.FC = () => {
 
       <List sx={{ mb: 2 }}>
         <ListItemButton
-          // button
-          component="div"
           onClick={handleLogout}
           sx={{
             px: 3,

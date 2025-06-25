@@ -36,7 +36,10 @@ def register_user(user: UserCreate):
     token_data = {
         "id_utilisateur": utilisateur["id_utilisateur"],
         "mail": utilisateur["mail"],
-        "role": utilisateur["role"]
+        "role": utilisateur["role"],
+        "nom": utilisateur["nom"],
+        "prenom": utilisateur["prenom"],
+        "carte_national": utilisateur["carte_national"]
     }
     token = create_access_token(token_data)
 
