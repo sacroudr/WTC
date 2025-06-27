@@ -26,7 +26,7 @@ import DialogCamionInfo from './dialogCamionInfo';
 
 import type { Camion } from '../../../types/camion';
 import DialogCamionEdit from './dialogCamionEdit';
-
+// import { useTheme } from '@mui/material/styles'; // Si tu veux utiliser le thème MUI
 const CamionContent: React.FC = () => {
   const [camions, setCamions] = useState<Camion[]>([]);
   const [loading, setLoading] = useState(true);
