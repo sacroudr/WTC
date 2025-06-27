@@ -9,6 +9,8 @@ class CamionCreate(BaseModel):
     fin_validite_assurance: date
     visite_technique: str
     fin_visite_technique: date
+    carte_grise: str
+    fin_carte_grise: date
     extincteur: bool
     fin_extincteur: date
     
@@ -19,5 +21,7 @@ class CamionUpdate(BaseModel):
     fin_validite_assurance: Optional[date] = None
     visite_technique: Optional[str] = None
     fin_visite_technique: Optional[date] = None
+    carte_grise: Optional[str] = None
+    fin_carte_grise: Optional[date] = None
     extincteur: Optional[bool] = None
     fin_extincteur: Optional[date] = None

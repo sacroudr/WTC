@@ -7,20 +7,60 @@ from .models import CamionCreate, CamionUpdate
 #permet de récupérer tous les camions
 def get_all_camions():
     try:
-        response = supabase.table("camion").select("*").execute()
+        response = supabase.table("camion").select(
+            """
+            *,
+            chauffeur_camion (
+                *,
+                chauffeur (
+                    *,
+                    utilisateur (
+                        nom,
+                        prenom
+                    )
+                )
+            )
+            """
+        ).execute()
 
         if not response.data:
             return {"message": "Aucun camion trouvé", "camions": []}
 
         return {"camions": response.data}
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération des camions: {str(e)}")
-    
+
 #permet de récupérer un camion par son id
+# def get_camion_by_id(id_camion: int):
+#     try:
+#         response = supabase.table("camion").select("*").eq("id_camion", id_camion).execute()
+
+#         if not response.data:
+#             raise HTTPException(status_code=404, detail="Camion non trouvé")
+
+#         return {"camion": response.data[0]}
+    
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération du camion: {str(e)}")
+
 def get_camion_by_id(id_camion: int):
     try:
-        response = supabase.table("camion").select("*").eq("id_camion", id_camion).execute()
+        response = supabase.table("camion").select(
+            """
+            *,
+            chauffeur_camion (
+                *,
+                chauffeur (
+                    *,
+                    utilisateur (
+                        nom,
+                        prenom
+                    )
+                )
+            )
+            """
+        ).eq("id_camion", id_camion).execute()
 
         if not response.data:
             raise HTTPException(status_code=404, detail="Camion non trouvé")
@@ -46,6 +86,8 @@ def create_camion(data: CamionCreate):
             "fin_validite_assurance": data.fin_validite_assurance.isoformat(),
             "visite_technique": data.visite_technique,
             "fin_visite_technique": data.fin_visite_technique.isoformat(),
+            "carte_grise": data.carte_grise,
+            "fin_carte_grise": data.fin_carte_grise.isoformat(),
             "extincteur": data.extincteur,
             "fin_extincteur": data.fin_extincteur.isoformat()
         }
@@ -81,6 +123,8 @@ def update_camion(id_camion: int, data: CamionUpdate):
             "fin_validite_assurance": data.fin_validite_assurance.isoformat() if data.fin_validite_assurance else None,
             "visite_technique": data.visite_technique,
             "fin_visite_technique": data.fin_visite_technique.isoformat() if data.fin_visite_technique else None,
+            "carte_grise": data.carte_grise,
+            "fin_carte_grise": data.fin_carte_grise.isoformat() if data.fin_carte_grise else None,
             "extincteur": data.extincteur,
             "fin_extincteur": data.fin_extincteur.isoformat() if data.fin_extincteur else None
         }

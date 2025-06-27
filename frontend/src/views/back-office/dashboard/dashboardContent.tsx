@@ -17,11 +17,13 @@ import {
 } from '@mui/material';
 import { ArrowForward } from '@mui/icons-material';
 import type { Camion } from '../../../types/camion'; // adapte ce chemin si besoin
+import DialogCamion from './dialogCamion';
 
 const DashboardContent: React.FC = () => {
   const [camions, setCamions] = useState<Camion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   const apiUrl = import.meta.env.VITE_API_BACK;
 
@@ -68,8 +70,9 @@ const DashboardContent: React.FC = () => {
           sx={{
             mt: 2,
             borderRadius: 3,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            boxShadow: '0 6px 20px rgba(0,0,0,0.08)',
             overflow: 'hidden',
+            backgroundColor: 'background.default',
           }}
         >
           <Table>
@@ -79,27 +82,45 @@ const DashboardContent: React.FC = () => {
                   background: 'linear-gradient(90deg, #f5a3ae, #c4a9f3)',
                 }}
               >
-                <TableCell sx={{ fontWeight: 'bold', color: '#1D1D1B' }}>
-                  Modèle
-                </TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1D1D1B' }}>
-                  Numéro matricule
-                </TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1D1D1B' }}>
-                  Carte grise
-                </TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1D1D1B' }}>
-                  Visite technique
-                </TableCell>
+                {['Numéro matricule','Modèle' , 'Carte grise', 'Visite technique'].map((label) => (
+                  <TableCell
+                    key={label}
+                    align="center"
+                    sx={{
+                      fontWeight: 'bold',
+                      color: 'text.primary',
+                      fontFamily: 'Montserrat, sans-serif',
+                      fontSize: '1rem',
+                    }}
+                  >
+                    {label}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {camions.map((camion) => (
-                <TableRow key={camion.id_camion}>
-                  <TableCell>{camion.modele}</TableCell>
-                  <TableCell>{camion.matricule}</TableCell>
-                  <TableCell>{camion.assurance}</TableCell>
-                  <TableCell>{camion.visite_technique}</TableCell>
+              {camions.slice(0, 5).map((camion) => (
+                <TableRow
+                  key={camion.id_camion}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: '#f0f0f0',
+                    },
+                    transition: 'background-color 0.3s',
+                  }}
+                >
+                  <TableCell align="center" sx={{ fontFamily: 'Open Sans, sans-serif' }}>
+                    {camion.matricule}
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontFamily: 'Open Sans, sans-serif' }}>
+                    {camion.modele}
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontFamily: 'Open Sans, sans-serif' }}>
+                    {camion.assurance}
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontFamily: 'Open Sans, sans-serif' }}>
+                    {camion.visite_technique}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -107,25 +128,36 @@ const DashboardContent: React.FC = () => {
           <Box
             sx={{
               display: 'flex',
-              justifyContent: 'flex-end',
+              justifyContent: 'center',
               px: 2,
               py: 1.5,
-              backgroundColor: '#f9f9f9',
+              backgroundColor: 'background.default',
             }}
           >
             <Button
               variant="text"
               endIcon={<ArrowForward />}
               sx={{
-                color: '#1D1D1B',
+                color: 'primary.main',
                 fontWeight: 'bold',
                 textTransform: 'none',
+                fontFamily: 'Open Sans, sans-serif',
+                '&:hover': {
+                  color: 'secondary.main',
+                },
               }}
+              onClick={() => setOpenDialog(true)}
             >
               Plus de détails
             </Button>
+            <DialogCamion
+              open={openDialog}
+              onClose={() => setOpenDialog(false)}
+              camions={camions}
+            />
           </Box>
         </TableContainer>
+
       ) : (
         <Alert severity="info" sx={{ mt: 2 }}>
           Aucun camion trouvé.

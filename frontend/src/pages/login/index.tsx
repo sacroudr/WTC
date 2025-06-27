@@ -128,6 +128,13 @@ const LoginPage: React.FC = () => {
             p: 5,
           }}
         >
+        <form
+          onSubmit={(e) => {
+            e.preventDefault(); // évite le rechargement de la page
+            handleLogin(); // appelle ta fonction de connexion
+          }}
+        >
+
           <Typography
             variant="h4"
             align="center"
@@ -209,6 +216,7 @@ const LoginPage: React.FC = () => {
           </Box>
 
           <Button
+            type="submit"
             variant="contained"
             fullWidth
             sx={{
@@ -236,7 +244,7 @@ const LoginPage: React.FC = () => {
               Créez-en un
             </RouterLink>
           </Typography>
-
+        </form>
         </Box>
       </Paper>
     </Box>
