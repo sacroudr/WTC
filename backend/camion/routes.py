@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from .controller import get_all_camions, get_camion_by_id, create_camion, update_camion, delete_camion
+from .controller import get_all_camions, get_camion_by_id, create_camion, update_camion, delete_camion, affecter_camion_au_chauffeur
 
-from .models import CamionCreate, CamionUpdate
+from .models import CamionCreate, CamionUpdate, ChauffeurCamionCreate
 
 router = APIRouter(prefix="/camions", tags=["Camions"])
 
@@ -30,3 +30,8 @@ def modifier_camion(id_camion: int, data: CamionUpdate):
 @router.delete("/delete/{id_camion}")
 def supprimer_camion(id_camion: int):
     return delete_camion(id_camion)
+
+# Route pour lier un chauffeur à un camion
+@router.post("/affecter_camion")
+def lier_chauffeur_camion(data: ChauffeurCamionCreate):
+    return affecter_camion_au_chauffeur(data)

@@ -25,3 +25,8 @@ class CamionUpdate(BaseModel):
     fin_carte_grise: Optional[date] = None
     extincteur: Optional[bool] = None
     fin_extincteur: Optional[date] = None
+    
+class ChauffeurCamionCreate(BaseModel):
+    id_chauffeur: int
+    id_camion: int
+

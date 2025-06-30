@@ -68,7 +68,7 @@ const menuItems = [
     roles: ['client', 'back-office', 'super-admin'],
   },
   {
-    text: 'Utilisateurs',
+    text: 'Chauffeurs',
     icon: <FiUsers size={22} />,
     path: utilisateursPath,
     roles: ['back-office', 'super-admin'],

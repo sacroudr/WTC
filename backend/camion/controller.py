@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from config.supabase import supabase
 
 
-from .models import CamionCreate, CamionUpdate
+from .models import CamionCreate, CamionUpdate, ChauffeurCamionCreate
 
 #permet de récupérer tous les camions
 def get_all_camions():
@@ -168,6 +168,38 @@ def delete_camion(id_camion: int):
         return {
             "message": "Camion supprimé avec succès",
             "camion_supprimé": delete_response.data[0]
+        }
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur serveur : {str(e)}")
+    
+#permet d'affecter un camion à un chauffeur
+def affecter_camion_au_chauffeur(data: ChauffeurCamionCreate):
+    try:
+        # Vérifie si l'affectation existe déjà
+        existing = supabase.table("chauffeur_camion") \
+            .select("*") \
+            .eq("id_chauffeur", data.id_chauffeur) \
+            .eq("id_camion", data.id_camion) \
+            .execute()
+        
+        if existing.data:
+            raise HTTPException(status_code=400, detail="Ce camion est déjà affecté à ce chauffeur.")
+
+        # Ajoute l'affectation
+        response = supabase.table("chauffeur_camion").insert({
+            "id_chauffeur": data.id_chauffeur,
+            "id_camion": data.id_camion
+        }).execute()
+
+        if not response.data:
+            raise HTTPException(status_code=500, detail="Erreur lors de l'affectation du camion.")
+
+        return {
+            "message": "Camion affecté au chauffeur avec succès",
+            "liaison": response.data[0]
         }
 
     except HTTPException as e:

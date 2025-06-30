@@ -32,7 +32,6 @@ const DialogCamionEdit: React.FC<Props> = ({ open, handleClose, idCamion, onCami
 
   const [initialCamion, setInitialCamion] = useState<Partial<Camion>>({});
 
-
   const [camion, setCamion] = useState<Partial<Camion>>({});
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);

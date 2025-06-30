@@ -1,16 +1,25 @@
 import React from 'react';
-import { Box } from '@mui/material';
-import UtilisateurContent from '../../../views/back-office/utilisateurs/utilsateurContent';
+import { Box, Typography } from '@mui/material';
+import ChauffeurContent from '../../../views/back-office/chauffeurs/chauffeurContent';
 
 
 
-const Utilisateurs_BackOffice: React.FC = () => {
+const Chauffeurs_BackOffice: React.FC = () => {
     return (
+        
         <Box sx={{ marginLeft: "290px", padding: "20px" }}>
-            <UtilisateurContent />
+            <Box display="flex" alignItems="center" mb={1}>
+            <Typography
+                variant="h4"
+                sx={{ display: 'flex', alignItems: 'center', lineHeight: 1, mr: 1 }}
+            >
+                Chauffeur
+            </Typography>
+            </Box>
+           <ChauffeurContent />
         </Box>
     );  
 };
 
 
-export default Utilisateurs_BackOffice;
+export default Chauffeurs_BackOffice;
