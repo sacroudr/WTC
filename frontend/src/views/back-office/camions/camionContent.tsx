@@ -120,7 +120,7 @@ const CamionContent: React.FC<CamionContentProps> = ({ refreshTrigger }) => {
   const currentCamions = filteredCamions.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ pt: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 4 }}>
         <TextField
           placeholder="Rechercher par matricule, modèle ou chauffeur…"
@@ -176,23 +176,23 @@ const CamionContent: React.FC<CamionContentProps> = ({ refreshTrigger }) => {
       ) : (
         <>
           <Box
-  sx={{
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 3,
-    justifyContent: 'flex-start',
-    mt: 2,
-  }}
->
-  {currentCamions.map((camion) => (
-    <Box
-      key={camion.id_camion}
-      sx={{
-        width: 'calc(25% - 24px)', // 4 cards per row, with 24px gap
-        minWidth: 260,
-        boxSizing: 'border-box',
-      }}
-    >
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 3,
+              justifyContent: 'flex-start',
+              mt: 2,
+            }}
+          >
+            {currentCamions.map((camion) => (
+              <Box
+                key={camion.id_camion}
+                sx={{
+                  width: 'calc(25% - 24px)', // 4 cards per row, with 24px gap
+                  minWidth: 260,
+                  boxSizing: 'border-box',
+                }}
+              >
                 <Paper
                   elevation={4}
                   sx={{

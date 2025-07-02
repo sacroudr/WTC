@@ -31,6 +31,30 @@ def get_all_camions():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération des camions: {str(e)}")
 
+#permet de récupérer tous les camions sans chauffeurs
+def get_camions_sans_chauffeurs():
+    try:
+        # Récupérer tous les camions avec leurs relations chauffeur_camion
+        response = supabase.table("camion").select(
+            """
+            *,
+            chauffeur_camion (
+                *
+            )
+            """
+        ).execute()
+
+        if not response.data:
+            return {"message": "Aucun camion trouvé", "camions": []}
+
+        # Filtrer ceux qui n'ont aucun chauffeur_camion
+        camions_sans_chauffeur = [camion for camion in response.data if not camion.get("chauffeur_camion")]
+
+        return {"camions_sans_chauffeur": camions_sans_chauffeur}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération des camions sans chauffeurs: {str(e)}")
+
 #permet de récupérer un camion par son id
 # def get_camion_by_id(id_camion: int):
 #     try:

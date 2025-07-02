@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from .controller import get_all_camions, get_camion_by_id, create_camion, update_camion, delete_camion, affecter_camion_au_chauffeur
+from .controller import get_all_camions,get_camions_sans_chauffeurs, get_camion_by_id, create_camion, update_camion, delete_camion, affecter_camion_au_chauffeur
 
 from .models import CamionCreate, CamionUpdate, ChauffeurCamionCreate
 
@@ -10,6 +10,10 @@ router = APIRouter(prefix="/camions", tags=["Camions"])
 @router.get("/")
 def list_camions():
     return get_all_camions()
+
+@router.get("/disponible")
+def list_camions_sans_chauffeur():
+    return get_camions_sans_chauffeurs()
 
 # Route pour récupérer un camion par son id
 @router.get("/{id_camion}")

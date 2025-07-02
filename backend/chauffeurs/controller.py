@@ -16,7 +16,7 @@ def get_all_chauffeurs():
     result = []
     for ch in chauffeurs:
         # Récupérer l'utilisateur lié
-        utilisateur_resp = supabase.table("utilisateur").select("nom, prenom, carte_national").eq("id_utilisateur", ch["id_utilisateur"]).execute()
+        utilisateur_resp = supabase.table("utilisateur").select("nom, prenom, carte_national, mail").eq("id_utilisateur", ch["id_utilisateur"]).execute()
         utilisateur = utilisateur_resp.data[0] if utilisateur_resp.data else {}
 
         # Récupérer les id_camion liés dans chauffeur_camion
@@ -34,6 +34,7 @@ def get_all_chauffeurs():
         result.append({
             "id_chauffeur": ch["id_chauffeur"],
             "num_permis": ch["num_permis"],
+            "telephone": ch["telephone"],
             "disponibilite": ch["disponibilite"],
             "utilisateur": utilisateur,
             "camions": camions
@@ -51,7 +52,7 @@ def get_chauffeur_by_id(id_chauffeur: int):
     chauffeur = chauffeur_resp.data[0]
 
     # Rechercher l'utilisateur lié
-    utilisateur_resp = supabase.table("utilisateur").select("nom, prenom, carte_national").eq("id_utilisateur", chauffeur["id_utilisateur"]).execute()
+    utilisateur_resp = supabase.table("utilisateur").select("nom, prenom, carte_national,mail").eq("id_utilisateur", chauffeur["id_utilisateur"]).execute()
     utilisateur = utilisateur_resp.data[0] if utilisateur_resp.data else {}
 
     # Récupérer les id_camion liés dans chauffeur_camion
@@ -68,6 +69,7 @@ def get_chauffeur_by_id(id_chauffeur: int):
     return {
         "id_chauffeur": chauffeur["id_chauffeur"],
         "num_permis": chauffeur["num_permis"],
+        "telephone": chauffeur["telephone"],
         "disponibilite": chauffeur["disponibilite"],
         "utilisateur": utilisateur,
         "camions": camions
@@ -95,6 +97,7 @@ def create_chauffeur(data: ChauffeurCreate):
     chauffeur_resp = supabase.table("chauffeur").insert({
         "id_utilisateur": utilisateur_id,
         "num_permis": data.num_permis,
+        "telephone": data.telephone,
         "disponibilite": data.disponibilite
     }).execute()
 
@@ -184,6 +187,7 @@ def update_chauffeur(id_chauffeur: int, data: ChauffeurUpdate):
     }
 
 #Permet de supprimer un chauffeur
+#Pour l'instant elle marche mais à changer
 def delete_chauffeur(id_chauffeur: int):
     # Vérifier si le chauffeur existe
     chauffeur_resp = supabase.table("chauffeur").select("*").eq("id_chauffeur", id_chauffeur).execute()
@@ -192,6 +196,9 @@ def delete_chauffeur(id_chauffeur: int):
 
     chauffeur = chauffeur_resp.data[0]
     utilisateur_id = chauffeur["id_utilisateur"]
+    
+    # 🔁 Supprimer les voyages liés à ce chauffeur
+    supabase.table("voyage").delete().eq("id_chauffeur", id_chauffeur).execute()
 
     # Supprimer le chauffeur
     supabase.table("chauffeur").delete().eq("id_chauffeur", id_chauffeur).execute()

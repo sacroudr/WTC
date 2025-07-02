@@ -15,7 +15,7 @@ import Dashboard_Client from './pages/client/dashboard';
 import Dashboard_BackOffice from './pages/back-office/dashboard';
 import Layout2 from './layouts/layout2';
 import RegisterPage from './pages/register';
-import Utilisateurs_BackOffice from './pages/back-office/utilisateurs';
+import Utilisateurs_BackOffice from './pages/back-office/chauffeurs';
 import Camions_BackOffice from './pages/back-office/camions';
 import Livraisons_BackOffice from './pages/back-office/livraisons';
 import Livraison_Client from './pages/client/livraisons';
