@@ -17,11 +17,12 @@ import Layout2 from './layouts/layout2';
 import RegisterPage from './pages/register';
 import Utilisateurs_BackOffice from './pages/back-office/chauffeurs';
 import Camions_BackOffice from './pages/back-office/camions';
-import Livraisons_BackOffice from './pages/back-office/livraisons';
+import Voyages_BackOffice from './pages/back-office/voyages';
 import Livraison_Client from './pages/client/livraisons';
 import Utilisateur_SuperAdmin from './pages/super-admin/utilisateurs';
 import Livraison_SuperAdmin from './pages/super-admin/livraison';
 import Camion_SuperAdmin from './pages/super-admin/camions';
+import Livraisons_BackOffice from './pages/back-office/livraisons';
 
 const App: React.FC = () => {
   return (
@@ -50,6 +51,7 @@ const App: React.FC = () => {
             
             <Route path="/utilisateurs_back-office" element={<Utilisateurs_BackOffice />} />
             <Route path="/camions_back-office" element={<Camions_BackOffice />} />
+            <Route path="/voyages_back-office" element={<Voyages_BackOffice />} />
             <Route path="/livraisons_back-office" element={<Livraisons_BackOffice />} />
 
             <Route path="/livraisons_client" element={<Livraison_Client />} />

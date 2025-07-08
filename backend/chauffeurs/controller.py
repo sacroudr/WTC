@@ -26,7 +26,7 @@ def get_all_chauffeurs():
         # Récupérer les camions associés (matricule uniquement ici)
         camions = []
         for id_camion in id_camions:
-            camion_resp = supabase.table("camion").select("matricule").eq("id_camion", id_camion).execute()
+            camion_resp = supabase.table("camion").select("id_camion,matricule").eq("id_camion", id_camion).execute()
             if camion_resp.data:
                 camions.append(camion_resp.data[0])
 
@@ -150,6 +150,7 @@ def update_chauffeur(id_chauffeur: int, data: ChauffeurUpdate):
         utilisateur_update = SimpleNamespace(data=[{}])
 
     chauffeur_fields = {
+        "telephone": data.telephone,
         "num_permis": data.num_permis,
         "disponibilite": data.disponibilite
     }

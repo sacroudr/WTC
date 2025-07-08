@@ -23,6 +23,8 @@ import { styled } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 import type { Chauffeur } from '../../../types/chauffeur'
 import DialogChauffeurDelete from './dialogChauffeurDelete'
+import DialogProfileChauffeur from './dialogProfileChauffeur'
+import DialogEditChauffeur from './dialogEditChauffeur'
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -54,6 +56,15 @@ const ChauffeurContent: React.FC<ChauffeurContentProps> = ({ refreshTrigger }) =
   const [chauffeurToDelete, setChauffeurToDelete] = useState<Chauffeur | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   
+  // Etats pour gestion du dialogue profile
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false)
+  const [selectedChauffeurId, setSelectedChauffeurId] = useState<number | null>(null)
+
+  // Etats pour gestion du dialogue edition
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [chauffeurToEdit, setChauffeurToEdit] = useState<Chauffeur | null>(null)
+
+
   // Nouveaux états pour loading et erreur
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -103,6 +114,27 @@ const ChauffeurContent: React.FC<ChauffeurContentProps> = ({ refreshTrigger }) =
     setChauffeurToDelete(null)
   }
 
+  // Gestion du dialogue edition
+  const handleOpenEditDialog = (chauffeur: Chauffeur) => {
+  setChauffeurToEdit(chauffeur)
+  setEditDialogOpen(true)
+}
+
+  const handleCloseEditDialog = () => {
+    setChauffeurToEdit(null)
+    setEditDialogOpen(false)
+  }
+  // Gestion du dialogue profil
+  const handleOpenProfileDialog = (chauffeurId: number) => {
+  setSelectedChauffeurId(chauffeurId)
+  setProfileDialogOpen(true)
+}
+  const handleCloseProfileDialog = () => {
+    setSelectedChauffeurId(null)
+    setProfileDialogOpen(false)
+  }
+
+  // Gestion de la suppression
   const handleConfirmDelete = (message: string) => {
     if (!chauffeurToDelete) return
 
@@ -111,6 +143,11 @@ const ChauffeurContent: React.FC<ChauffeurContentProps> = ({ refreshTrigger }) =
     setDialogOpen(false)
     setChauffeurToDelete(null)
     setSuccessMessage(message)
+  }
+
+  // Quand la maj est terminée, recharge les chauffeurs
+  const handleChauffeurUpdated = () => {
+    fetchChauffeurs()
   }
 
   return (
@@ -207,6 +244,7 @@ const ChauffeurContent: React.FC<ChauffeurContentProps> = ({ refreshTrigger }) =
                           variant="contained"
                           size="small"
                           sx={{ fontSize: '12px', textTransform: 'none', background: '#3168B1' }}
+                          onClick={() => handleOpenEditDialog(ch)}
                         >
                           Modifier
                         </Button>
@@ -214,6 +252,7 @@ const ChauffeurContent: React.FC<ChauffeurContentProps> = ({ refreshTrigger }) =
                           variant="outlined"
                           size="small"
                           sx={{ fontSize: '12px', textTransform: 'none' }}
+                          onClick={() => handleOpenProfileDialog(ch.id_chauffeur)}
                         >
                           Profil
                         </Button>
@@ -242,6 +281,21 @@ const ChauffeurContent: React.FC<ChauffeurContentProps> = ({ refreshTrigger }) =
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </TableContainer>
+
+      {/* Dialogue modification chauffeur */}
+      <DialogEditChauffeur
+        open={editDialogOpen}
+        onClose={handleCloseEditDialog}
+        chauffeur={chauffeurToEdit}
+        onUpdated={handleChauffeurUpdated}
+      />
+
+      {/* Dialogue profil chauffeur */}
+      <DialogProfileChauffeur
+        open={profileDialogOpen}
+        onClose={handleCloseProfileDialog}
+        chauffeurId={selectedChauffeurId}
+      />
 
       {/* Dialogue suppression */}
       <DialogChauffeurDelete

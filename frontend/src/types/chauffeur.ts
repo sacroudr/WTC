@@ -4,6 +4,7 @@ export type Utilisateur = {
   nom: string;
   prenom: string;
   mail: string;
+  carte_national: string;
 };
 export type Chauffeur = {
     id_chauffeur: number;

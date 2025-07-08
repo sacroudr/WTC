@@ -53,6 +53,13 @@ const utilisateursPath =
 const camionsPath =
   role === 'super-admin' ? '/camions_super-admin' : '/camions_back-office';
 
+const voyagesPath =
+  role === 'client'
+    ? '/voyages_client'
+    : role === 'super-admin'
+    ? '/voyages_super-admin'
+    : '/voyages_back-office';
+
 const livraisonsPath =
   role === 'client'
     ? '/livraisons_client'
@@ -78,6 +85,12 @@ const menuItems = [
     icon: <FiTruck size={22} />,
     path: camionsPath,
     roles: ['back-office', 'super-admin'],
+  },
+  {
+    text: 'Voyages',
+    icon: <FiPackage size={22} />,
+    path: voyagesPath,
+    roles: ['client', 'back-office', 'super-admin'],
   },
   {
     text: 'Livraisons',
