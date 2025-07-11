@@ -6,16 +6,13 @@ import {
   Typography,
   Alert,
   Paper,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Divider,
+  Autocomplete,
 } from '@mui/material';
 import axios from 'axios';
 import type { ClientApiResponse } from '../../../types/client';
 import type { Chauffeur } from '../../../types/chauffeur';
-import type { SelectChangeEvent } from '@mui/material';
+// import type { SelectChangeEvent } from '@mui/material';
 
 const VoyageContent: React.FC = () => {
   const apiUrl = import.meta.env.VITE_API_BACK;
@@ -64,18 +61,18 @@ const VoyageContent: React.FC = () => {
     fetchChauffeurs();
   }, [apiUrl]);
 
-  const handleChauffeurChange = (e: SelectChangeEvent) => {
-    const selectedChauffeurId = parseInt(e.target.value as string, 10);
-    const selectedChauffeur = chauffeurs.find((c) => c.id_chauffeur === selectedChauffeurId);
-    const firstCamion = selectedChauffeur?.camions?.[0];
-    console.log('🚚 id_camion sélectionné :', firstCamion?.id_camion ?? 'Aucun camion trouvé');
-    setFormData((prev) => ({
-      ...prev,
-      id_chauffeur: selectedChauffeurId.toString(),
-      id_camion: firstCamion?.id_camion != null ? firstCamion.id_camion.toString() : '',
-    }));
-    setMatriculeCamion(firstCamion?.matricule || '');
-  };
+  // const handleChauffeurChange = (e: SelectChangeEvent) => {
+  //   const selectedChauffeurId = parseInt(e.target.value as string, 10);
+  //   const selectedChauffeur = chauffeurs.find((c) => c.id_chauffeur === selectedChauffeurId);
+  //   const firstCamion = selectedChauffeur?.camions?.[0];
+  //   console.log('🚚 id_camion sélectionné :', firstCamion?.id_camion ?? 'Aucun camion trouvé');
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     id_chauffeur: selectedChauffeurId.toString(),
+  //     id_camion: firstCamion?.id_camion != null ? firstCamion.id_camion.toString() : '',
+  //   }));
+  //   setMatriculeCamion(firstCamion?.matricule || '');
+  // };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
     const { name, value } = e.target;
@@ -165,22 +162,30 @@ const VoyageContent: React.FC = () => {
 
         {/* Client + ICE */}
         <Box display="flex" gap={2}>
-          <FormControl fullWidth size="small">
-            <InputLabel>Client</InputLabel>
-            <Select
-              name="id_client"
-              value={formData.id_client}
-              onChange={(e) => setFormData((prev) => ({ ...prev, id_client: e.target.value }))}
-              label="Client"
-            >
-              {clients.map((client) => (
-                <MenuItem key={client.id_client} value={client.id_client}>
-                  {client.utilisateur.nom}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
+          <Autocomplete
+            options={clients}
+            getOptionLabel={(client) =>
+              `${client.utilisateur.nom} - ${client.entreprise}`
+            }
+            value={clients.find((c) => c.id_client.toString() === formData.id_client) || null}
+            onChange={(_, newValue) => {
+              setFormData((prev) => ({
+                ...prev,
+                id_client: newValue ? newValue.id_client.toString() : '',
+              }));
+            }}
+            renderInput={(params) => (
+              <TextField {...params} label="Client" size="small" />
+            )}
+            renderOption={(props, client) => (
+              <li {...props}>
+                <span style={{ fontWeight: 'bold' }}>{client.utilisateur.nom}</span>{' '}
+                <span style={{ color: '#777', fontStyle: 'italic' }}> - {client.entreprise}</span>
+              </li>
+            )}
+            fullWidth
+            isOptionEqualToValue={(option, value) => option.id_client === value.id_client}
+          />
           <TextField
             fullWidth
             label="ICE"
@@ -193,26 +198,44 @@ const VoyageContent: React.FC = () => {
 
         {/* Chauffeur + Camion */}
         <Box display="flex" gap={2}>
-          <FormControl fullWidth size="small">
-            <InputLabel>Chauffeur</InputLabel>
-            <Select
-              name="id_chauffeur"
-              value={formData.id_chauffeur}
-              onChange={handleChauffeurChange}
-              label="Chauffeur"
-            >
-              {chauffeurs
-                .filter((chauffeur) => chauffeur.disponibilite)
-                .map((chauffeur) => (
-                  <MenuItem key={chauffeur.id_chauffeur} value={chauffeur.id_chauffeur}>
-                    {chauffeur.utilisateur
-                      ? `${chauffeur.utilisateur.nom} ${chauffeur.utilisateur.prenom}`
-                      : `Chauffeur ${chauffeur.id_chauffeur}`}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-
+          <Autocomplete
+            options={chauffeurs.filter((chauffeur) => chauffeur.disponibilite)}
+            getOptionLabel={(chauffeur) =>
+              chauffeur.utilisateur
+                ? `${chauffeur.utilisateur.nom} ${chauffeur.utilisateur.prenom}`
+                : `Chauffeur ${chauffeur.id_chauffeur}`
+            }
+            value={
+              chauffeurs.find((c) => c.id_chauffeur.toString() === formData.id_chauffeur) || null
+            }
+            onChange={(_, newValue) => {
+              const firstCamion = newValue?.camions?.[0];
+              setFormData((prev) => ({
+                ...prev,
+                id_chauffeur: newValue ? newValue.id_chauffeur.toString() : '',
+                id_camion: firstCamion?.id_camion ? firstCamion.id_camion.toString() : '',
+              }));
+              setMatriculeCamion(firstCamion?.matricule || '');
+            }}
+            renderInput={(params) => (
+              <TextField {...params} label="Chauffeur" size="small" />
+            )}
+            renderOption={(props, chauffeur) => (
+              <li {...props}>
+                <span style={{ fontWeight: 'bold' }}>
+                  {chauffeur.utilisateur?.nom || `Chauffeur ${chauffeur.id_chauffeur}`}
+                </span>
+                {chauffeur.utilisateur && (
+                  <span style={{ color: '#777', fontStyle: 'italic', marginLeft: 4 }}>
+                    {chauffeur.utilisateur.prenom}
+                  </span>
+                )}
+              </li>
+            )}
+            fullWidth
+            isOptionEqualToValue={(option, value) => option.id_chauffeur === value.id_chauffeur}
+            noOptionsText="Aucun chauffeur n'est disponible"
+          />
           <TextField
             fullWidth
             label="Matricule Camion"

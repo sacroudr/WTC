@@ -9,4 +9,9 @@ export type Voyage = {
   adresse_depart: string;
   adresse_arrivee: string;
   statut: string;
+  entreprise: string;
+
+  nom_client: string;
+  nom_chauffeur: string;
+  matricule: string;
 };

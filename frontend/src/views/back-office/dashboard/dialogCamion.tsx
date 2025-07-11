@@ -77,7 +77,7 @@ const DialogCamion: React.FC<Props> = ({ open, onClose, camions }) => {
             </TableHead>
 
             <TableBody>
-              {camions.map((camion, index) => {
+              {[...camions].sort((a, b) => a.id_camion - b.id_camion).map((camion, index) => {
                 const chauffeur = camion.chauffeur_camion?.[0]?.chauffeur?.utilisateur;
                 const nomComplet = chauffeur
                   ? `${chauffeur.prenom} ${chauffeur.nom}`

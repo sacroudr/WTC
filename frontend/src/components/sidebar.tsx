@@ -11,7 +11,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiGrid, FiUsers, FiTruck, FiLogOut, FiPackage } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiTruck, FiLogOut, FiPackage,  FiMap, FiUser } from 'react-icons/fi';
 // import WtcLogo from '../assets/WTC_LOGO_JPG_v2_removed.png';
 import WtcLogo from '../assets/WTC_LOGO_CROPPED.png';
 import { ListItemButton } from '@mui/material';
@@ -47,8 +47,11 @@ const dashboardPath =
     ? '/dashboard_back-office'
     : '/dashboard_super-admin';
 
+const clientPath =
+  role === 'super-admin' ? '/clients_super-admin' : '/clients_back-office';
+
 const utilisateursPath =
-  role === 'super-admin' ? '/utilisateurs_super-admin' : '/utilisateurs_back-office';
+  role === 'super-admin' ? '/utilisateurs_super-admin' : '/chauffeurs_back-office';
 
 const camionsPath =
   role === 'super-admin' ? '/camions_super-admin' : '/camions_back-office';
@@ -75,6 +78,12 @@ const menuItems = [
     roles: ['client', 'back-office', 'super-admin'],
   },
   {
+    text: 'Clients',
+    icon: <FiUser size={22} />,
+    path: clientPath,
+    roles: ['back-office', 'super-admin'],
+  },
+  {
     text: 'Chauffeurs',
     icon: <FiUsers size={22} />,
     path: utilisateursPath,
@@ -88,7 +97,7 @@ const menuItems = [
   },
   {
     text: 'Voyages',
-    icon: <FiPackage size={22} />,
+    icon: <FiMap size={22} />,
     path: voyagesPath,
     roles: ['client', 'back-office', 'super-admin'],
   },
@@ -98,6 +107,7 @@ const menuItems = [
     path: livraisonsPath,
     roles: ['client', 'back-office', 'super-admin'],
   },
+  
 ];
 
 

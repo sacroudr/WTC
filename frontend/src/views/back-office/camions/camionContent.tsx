@@ -25,6 +25,8 @@ import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import DialogCamionInfo from './dialogCamionInfo';
 import type { Camion } from '../../../types/camion';
 import DialogCamionEdit from './dialogCamionEdit';
+import DialogDeleteCamion from './dialogDeleteCamion';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 interface CamionContentProps {
   refreshTrigger: number;
@@ -38,7 +40,9 @@ const CamionContent: React.FC<CamionContentProps> = ({ refreshTrigger }) => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [selectedCamionId, setSelectedCamionId] = useState<number | null>(null);
   const [dialogOpenInfo, setDialogOpenInfo] = useState(false);  
-  const [dialogOpenEdit, setDialogOpenEdit] = useState(false);  
+  const [dialogOpenEdit, setDialogOpenEdit] = useState(false); 
+  const [dialogOpenDelete, setDialogOpenDelete] = useState(false);
+ 
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -64,6 +68,17 @@ const CamionContent: React.FC<CamionContentProps> = ({ refreshTrigger }) => {
     setDialogOpenEdit(false);
     setSelectedCamionId(null);
   };
+
+  const openDialogDelete = (id: number) => {
+    setSelectedCamionId(id);
+    setDialogOpenDelete(true);
+  };
+
+  const closeDialogDelete = () => {
+    setDialogOpenDelete(false);
+    setSelectedCamionId(null);
+  };
+
 
   const getNomPrenomChauffeur = (camion: Camion) => {
     if (camion.chauffeur_camion?.length && camion.chauffeur_camion[0].chauffeur?.utilisateur) {
@@ -241,6 +256,11 @@ const CamionContent: React.FC<CamionContentProps> = ({ refreshTrigger }) => {
                       titleAccess="Informations"
                       onClick={() => openDialogInfo(camion.id_camion)}
                     />
+                    <DeleteOutlineIcon
+                      sx={{ color: '#E42422', cursor: 'pointer' }}
+                      titleAccess="Supprimer"
+                      onClick={() => openDialogDelete(camion.id_camion)}
+                    />
                   </Box>
 
                   <Box sx={{ width: '100%', mt: 4 }}>
@@ -332,6 +352,16 @@ const CamionContent: React.FC<CamionContentProps> = ({ refreshTrigger }) => {
           )}
         </>
       )}
+
+      <DialogDeleteCamion
+        open={dialogOpenDelete}
+        handleClose={closeDialogDelete}
+        idCamion={selectedCamionId}
+        onCamionDeleted={() => {
+          fetchCamions();  // Refresh la liste après suppression
+          setSuccessMessage("Camion supprimé avec succès !");
+        }}
+      />
 
       <DialogCamionInfo
         open={dialogOpenInfo}

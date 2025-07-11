@@ -99,7 +99,10 @@ const DashboardContent: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {camions.slice(0, 5).map((camion) => (
+              {[...camions]
+                .sort((a, b) => a.id_camion - b.id_camion)
+                .slice(0, 5)
+                .map((camion) => (
                 <TableRow
                   key={camion.id_camion}
                   sx={{

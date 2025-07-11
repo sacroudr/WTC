@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from .controller import get_livraisons_par_numero_voyage, add_suivi
+from .controller import get_livraisons_par_numero_voyage, add_suivi, get_suivi_livraison
 
 from .models import SuiviCreate
 
@@ -22,6 +22,11 @@ def add_suivi_livraison(data: SuiviCreate):
         commentaire=data.commentaire
     )
     
+    
+@router.get("/{id_livraison}/suivi")
+def suivi_livraison(id_livraison: int):
+    return get_suivi_livraison(id_livraison)
+
 #route pour récupérer l'historique de suivi d'une livraison par son numero de voyage
 # @router.get("/historique/{numero_livraison}")
 # def list_suivi_livraison1(numero_livraison: str):
