@@ -44,7 +44,7 @@ def get_client_by_id(id_client: int):
     client = client_resp.data[0]
 
     # 2. Récupérer l'utilisateur associé
-    utilisateur_resp = supabase.table("utilisateur").select("nom, prenom, carte_national").eq("id_utilisateur", client["id_utilisateur"]).execute()
+    utilisateur_resp = supabase.table("utilisateur").select("nom, prenom, carte_national, mail").eq("id_utilisateur", client["id_utilisateur"]).execute()
     utilisateur = utilisateur_resp.data[0] if utilisateur_resp.data else {}
 
     # 3. Retirer le mot de passe pour la sécurité

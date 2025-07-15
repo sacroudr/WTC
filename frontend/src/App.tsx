@@ -24,6 +24,7 @@ import Camion_SuperAdmin from './pages/super-admin/camions';
 import Livraisons_BackOffice from './pages/back-office/livraisons';
 import Chauffeurs_BackOffice from './pages/back-office/chauffeurs';
 import Client_BackOffice from './pages/back-office/client';
+import ClientContent from './views/back-office/clients/voyage/voyageContent';
 
 const App: React.FC = () => {
   return (
@@ -52,6 +53,7 @@ const App: React.FC = () => {
             
             <Route path="/chauffeurs_back-office" element={<Chauffeurs_BackOffice />} />
             <Route path="/clients_back-office" element={<Client_BackOffice />} />
+            <Route path="/clients_back-office/:clientId" element={<ClientContent />} />
             <Route path="/camions_back-office" element={<Camions_BackOffice />} />
             <Route path="/voyages_back-office" element={<Voyages_BackOffice />} />
             <Route path="/livraisons_back-office" element={<Livraisons_BackOffice />} />
