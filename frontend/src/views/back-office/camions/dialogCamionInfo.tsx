@@ -30,6 +30,14 @@ const DialogCamionInfo: React.FC<DialogInfoCamionProps> = ({ open, handleClose, 
   const theme = useTheme();
   const apiUrl = import.meta.env.VITE_API_BACK;
 
+
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return ''; // Date invalide
+    return date.toLocaleDateString('fr-FR'); // Retourne dd/mm/yyyy automatiquement en français
+  };
+
   useEffect(() => {
     const fetchCamion = async () => {
       if (idCamion == null) return;
@@ -134,13 +142,13 @@ const DialogCamionInfo: React.FC<DialogInfoCamionProps> = ({ open, handleClose, 
             {/* Les autres champs : 2 colonnes */}
             <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                 <InfoLabel label="Carte grise" value={camion.carte_grise} />
-                <InfoLabel label="Fin carte grise" value={camion.fin_carte_grise} />
+                <InfoLabel label="Fin carte grise" value={formatDate(camion.fin_carte_grise)} />
                 <InfoLabel label="Assurance" value={camion.assurance} />
-                <InfoLabel label="Fin assurance" value={camion.fin_validite_assurance} />
+                <InfoLabel label="Fin assurance" value={formatDate(camion.fin_validite_assurance)} />
                 <InfoLabel label="Visite technique" value={camion.visite_technique} />
-                <InfoLabel label="Fin visite technique" value={camion.fin_visite_technique} />
+                <InfoLabel label="Fin visite technique" value={formatDate(camion.fin_visite_technique)} />
                 <InfoLabel label="Extincteur" value={camion.extincteur ? 'Oui' : 'Non'} />
-                <InfoLabel label="Fin extincteur" value={camion.fin_extincteur} />
+                <InfoLabel label="Fin extincteur" value={formatDate(camion.fin_extincteur)} />
             </Box>
             </Paper>
         ) : (

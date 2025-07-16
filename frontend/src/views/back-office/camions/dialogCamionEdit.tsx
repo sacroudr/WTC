@@ -37,6 +37,19 @@ const DialogCamionEdit: React.FC<Props> = ({ open, handleClose, idCamion, onCami
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+
+  const formatDateForDisplay = (isoDate?: string): string => {
+    if (!isoDate) return '';
+    const [year, month, day] = isoDate.split('-');
+    return `${day}/${month}/${year}`;
+  };
+
+  const formatDateForInput = (displayDate: string): string => {
+    // convertit "dd/mm/yyyy" vers "yyyy-mm-dd"
+    const [day, month, year] = displayDate.split('/');
+    return `${year}-${month}-${day}`;
+  };
+
   useEffect(() => {
     if (!open || idCamion === null) return;
 
@@ -164,12 +177,14 @@ const DialogCamionEdit: React.FC<Props> = ({ open, handleClose, idCamion, onCami
               />
               <TextField
                 label="Fin validité assurance"
-                type="date"
+                type="text"
                 fullWidth
                 size="small"
                 InputLabelProps={{ shrink: true }}
-                value={(camion.fin_validite_assurance as string)?.slice(0, 10) || ''}
-                onChange={(e) => handleChange('fin_validite_assurance', e.target.value)}
+                value={formatDateForDisplay(camion.fin_validite_assurance as string)}
+                onChange={(e) =>
+                  handleChange('fin_validite_assurance', formatDateForInput(e.target.value))
+                }
               />
             </Box>
 
@@ -185,12 +200,14 @@ const DialogCamionEdit: React.FC<Props> = ({ open, handleClose, idCamion, onCami
               />
               <TextField
                 label="Fin validité carte grise"
-                type="date"
+                type="text"
                 fullWidth
                 size="small"
                 InputLabelProps={{ shrink: true }}
-                value={(camion.fin_carte_grise as string)?.slice(0, 10) || ''}
-                onChange={(e) => handleChange('fin_carte_grise', e.target.value)}
+                value={formatDateForDisplay(camion.fin_carte_grise as string)}
+                onChange={(e) =>
+                  handleChange('fin_carte_grise', formatDateForInput(e.target.value))
+                }
               />
             </Box>
 
@@ -206,12 +223,14 @@ const DialogCamionEdit: React.FC<Props> = ({ open, handleClose, idCamion, onCami
               />
               <TextField
                 label="Fin de la visite technique"
-                type="date"
+                type="text"
                 fullWidth
                 size="small"
                 InputLabelProps={{ shrink: true }}
-                value={(camion.fin_visite_technique as string)?.slice(0, 10) || ''}
-                onChange={(e) => handleChange('fin_visite_technique', e.target.value)}
+                value={formatDateForDisplay(camion.fin_visite_technique as string)}
+                onChange={(e) =>
+                  handleChange('fin_visite_technique', formatDateForInput(e.target.value))
+                }
               />
             </Box>
 
@@ -245,11 +264,15 @@ const DialogCamionEdit: React.FC<Props> = ({ open, handleClose, idCamion, onCami
               {camion.extincteur === true && (
                 <TextField
                   label="Fin validité extincteur"
-                  type="date"
+                  type="text"
                   size="small"
                   InputLabelProps={{ shrink: true }}
-                  value={(camion.fin_extincteur as string)?.slice(0, 10) || ''}
-                  onChange={(e) => handleChange('fin_extincteur', e.target.value)}
+                  value={formatDateForDisplay(camion.fin_extincteur as string)}
+                onChange={(e) =>
+                  handleChange('fin_extincteur', formatDateForInput(e.target.value))
+                }
+                  // value={(camion.fin_extincteur as string)?.slice(0, 10) || ''}
+                  // onChange={(e) => handleChange('fin_extincteur', e.target.value)}
                 />
               )}
             </Box>

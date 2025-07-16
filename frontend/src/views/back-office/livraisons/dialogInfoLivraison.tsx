@@ -125,7 +125,16 @@ const DialogInfoLivraison: React.FC<DialogInfoLivraisonProps> = ({ livraisons, o
                   {statusOrder.map((status, i) => {
                     const isCompleted = completedStatuses.includes(status);
                     const suiviData = livraison.suivi.find((s) => s.statut === status);
-                    const dateMaj = suiviData ? new Date(suiviData.date_maj).toLocaleString() : '--';
+                    const dateMaj = suiviData
+                      ? new Date(suiviData.date_maj).toLocaleString('fr-FR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false,
+                        })
+                      : '--';
                     const commentaire = suiviData?.commentaire || 'En attente';
 
                     return (

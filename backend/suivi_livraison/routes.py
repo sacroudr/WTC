@@ -6,7 +6,6 @@ from .models import SuiviCreate
 
 router = APIRouter(prefix="/suivi", tags=["Suivi"])
 
-
 #route pour récupérer l'historique de suivi d'une livraison
 @router.get("/{numero_livraison}")
 def list_suivi_livraison(numero_livraison: str):
@@ -22,7 +21,7 @@ def add_suivi_livraison(data: SuiviCreate):
         commentaire=data.commentaire
     )
     
-    
+#route pour récupérer l'historique de suivi d'une livraison
 @router.get("/{id_livraison}/suivi")
 def suivi_livraison(id_livraison: int):
     return get_suivi_livraison(id_livraison)

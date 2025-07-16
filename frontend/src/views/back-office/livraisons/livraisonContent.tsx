@@ -155,19 +155,22 @@ const LivraisonContent: React.FC = () => {
               </TableHead>
 
               <TableBody>
-                {voyages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((voyage) => (
-                  <TableRow key={voyage.id_voyage} hover>
-                    <TableCell>{voyage.numero_voyage}</TableCell>
-                    <TableCell>{voyage.entreprise}</TableCell>
-                    <TableCell>{voyage.nom_client}</TableCell>
-                    <TableCell>{voyage.nom_chauffeur}</TableCell>
-                    <TableCell>{voyage.matricule}</TableCell>
-                    <TableCell>
-                      <TrackButton onClick={() => handleSearch(voyage.numero_voyage)}>
-                        Track
-                      </TrackButton>
-                    </TableCell>
-                  </TableRow>
+                {[...voyages]
+                  .sort((a, b) => a.id_voyage - b.id_voyage)
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((voyage) => (
+                    <TableRow key={voyage.id_voyage} hover>
+                      <TableCell>{voyage.numero_voyage}</TableCell>
+                      <TableCell>{voyage.entreprise}</TableCell>
+                      <TableCell>{voyage.nom_client}</TableCell>
+                      <TableCell>{voyage.nom_chauffeur}</TableCell>
+                      <TableCell>{voyage.matricule}</TableCell>
+                      <TableCell>
+                        <TrackButton onClick={() => handleSearch(voyage.numero_voyage)}>
+                          Track
+                        </TrackButton>
+                      </TableCell>
+                    </TableRow>
                 ))}
               </TableBody>
             </Table>

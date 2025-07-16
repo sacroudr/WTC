@@ -1,25 +1,28 @@
-import { Fade, Box } from '@mui/material';
+import { Fade, Box, Typography } from '@mui/material';
 import React from 'react';
+import VoyagesInfo from './voyageInfo';
+import VoyageList from './voyageList';
 import { useParams } from 'react-router-dom';
-
 const ClientContent: React.FC = () => {
+  // const clientId = 1; // Remplace ça dynamiquement plus tard avec useParams si besoin
   const { clientId } = useParams<{ clientId: string }>();
-
-  // Tu peux convertir l'ID en number si nécessaire
   const numericClientId = Number(clientId);
-
-  // Utilise numericClientId pour charger les voyages du client
-  // Exemple :
-  // useEffect(() => { fetchVoyagesByClient(numericClientId); }, [numericClientId]);
-
   return (
-     <Fade in timeout={700}>
-          <Box sx={{ marginLeft: '290px', padding: '20px' }}>
-        <div>
-        <h2>Voyages du client ID : {numericClientId}</h2>
-        {/* Ton contenu ici */}
-        </div>
-    </Box>
+    <Fade in timeout={700}>
+      <Box sx={{ marginLeft: "290px", padding: "20px" }}>
+        <Box mb={2}>
+          <Box display="flex" alignItems="center" mb={1}>
+            <Typography
+              variant="h4"
+              sx={{ display: 'flex', alignItems: 'center', lineHeight: 1, mr: 1 }}
+            >
+              Vos voyages
+            </Typography>
+            <VoyagesInfo />
+          </Box>
+        </Box>
+        <VoyageList clientId={numericClientId} />
+      </Box>
     </Fade>
   );
 };

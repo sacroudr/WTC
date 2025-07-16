@@ -7,7 +7,7 @@ export type Voyage = {
   ice: string;
   date_depart: Date;
   adresse_depart: string;
-  adresse_arrivee: string;
+  adresse_arrive: string;
   statut: string;
   entreprise: string;
 
