@@ -75,7 +75,7 @@ const RegisterPage: React.FC = () => {
     localStorage.setItem("token", data.utilisateur.token);
 
     setTimeout(() => {
-      window.location.href = "/back-office";
+      window.location.href = "/dashboard_back-office";
     }, 1000); // redirection après 1s
 
   } catch (error: unknown) {

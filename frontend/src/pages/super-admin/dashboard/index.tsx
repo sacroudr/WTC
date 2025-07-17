@@ -6,7 +6,7 @@ import DashboardHeader from '../../../views/super-admin/dashboard/dashboardHeade
 
 const Dashboard_SuperAdmin: React.FC = () => {
     return (
-        <Box sx={{ marginLeft: "290px", padding: "20px" }}>
+        <Box sx={{ marginLeft: "270px", padding: "20px" }}>
             <DashboardHeader />
             <DashboardContent />
         </Box>

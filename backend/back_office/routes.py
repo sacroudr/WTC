@@ -1,11 +1,15 @@
 from fastapi import APIRouter
 
-from .controller import get_all_backoffice, get_backoffice_by_id, update_backoffice, delete_backoffice
+from .controller import get_all_backoffice, get_backoffice_by_id, update_backoffice, delete_backoffice, create_backoffice, get_clients_count
 
-from .models import BackOfficeUpdate
+from .models import BackOfficeUpdate, BackOfficeCreate
 
 router = APIRouter(prefix="/backoffice", tags=["Backoffice"])
 
+# route pour créer un nouveau back-office
+@router.post("/new")
+def creer_backoffice(data: BackOfficeCreate):
+    return create_backoffice(data)
 #route pour lister tous les utilisateurs
 @router.get("/")
 def list_backoffice():
@@ -25,3 +29,7 @@ def modifier_backoffice(id_utilisateur: int, data: BackOfficeUpdate):
 @router.delete("/delete/{id_utilisateur}")
 def supprimer_backoffice(id_utilisateur: int):
     return delete_backoffice(id_utilisateur)
+
+@router.get("/client/count")
+def clients_count():
+    return get_clients_count()

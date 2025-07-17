@@ -51,28 +51,14 @@ const VoyageContent: React.FC = () => {
     const fetchChauffeurs = async () => {
       try {
         const response = await axios.get(`${apiUrl}/chauffeurs/`);
-        console.log('Chauffeurs récupérés :', response.data);
         setChauffeurs(response.data);
       } catch (err: unknown) {
         console.error(err);
         setError('Erreur lors du chargement des chauffeurs.');
       }
     };
-    fetchChauffeurs();
+    fetchChauffeurs();  
   }, [apiUrl]);
-
-  // const handleChauffeurChange = (e: SelectChangeEvent) => {
-  //   const selectedChauffeurId = parseInt(e.target.value as string, 10);
-  //   const selectedChauffeur = chauffeurs.find((c) => c.id_chauffeur === selectedChauffeurId);
-  //   const firstCamion = selectedChauffeur?.camions?.[0];
-  //   console.log('🚚 id_camion sélectionné :', firstCamion?.id_camion ?? 'Aucun camion trouvé');
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     id_chauffeur: selectedChauffeurId.toString(),
-  //     id_camion: firstCamion?.id_camion != null ? firstCamion.id_camion.toString() : '',
-  //   }));
-  //   setMatriculeCamion(firstCamion?.matricule || '');
-  // };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
     const { name, value } = e.target;

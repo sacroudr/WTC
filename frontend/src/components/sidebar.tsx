@@ -40,35 +40,41 @@ const Sidebar: React.FC = () => {
 
   const role = getUserRoleFromToken();
 
-const dashboardPath =
-  role === 'client'
-    ? '/dashboard_client'
-    : role === 'back-office'
-    ? '/dashboard_back-office'
-    : '/dashboard_super-admin';
+  const dashboardPath =
+    role === 'client'
+      ? '/dashboard_client'
+      : role === 'back-office'
+      ? '/dashboard_back-office'
+      : '/dashboard_super-admin';
 
-const clientPath =
-  role === 'super-admin' ? '/clients_super-admin' : '/clients_back-office';
+  const clientPath =
+    role === 'super-admin' ? '/clients_super-admin' : '/clients_back-office';
 
-const utilisateursPath =
-  role === 'super-admin' ? '/utilisateurs_super-admin' : '/chauffeurs_back-office';
+  // const utilisateursPath =
+  //   role === 'super-admin' ? '/utilisateurs_super-admin' : '/chauffeurs_back-office';
+  const utilisateursPath =
+    role === 'back-office' ? '/chauffeurs_back-office' : null;
 
-const camionsPath =
-  role === 'super-admin' ? '/camions_super-admin' : '/camions_back-office';
+  const camionsPath =
+    role === 'super-admin' ? '/camions_super-admin' : '/camions_back-office';
 
-const voyagesPath =
-  role === 'client'
-    ? '/voyages_client'
-    : role === 'super-admin'
-    ? '/voyages_super-admin'
-    : '/voyages_back-office';
+  const boPath = role === 'super-admin' ? '/bo_super-admin' : null;
 
-const livraisonsPath =
-  role === 'client'
-    ? '/livraisons_client'
-    : role === 'super-admin'
-    ? '/livraisons_super-admin'
-    : '/livraisons_back-office';
+  const logsPath = role === 'super-admin' ? '/logs_super-admin' : null;
+
+  const voyagesPath =
+    role === 'client'
+      ? '/voyages_client'
+      : role === 'super-admin'
+      ? '/voyages_super-admin'
+      : '/voyages_back-office';
+
+  const livraisonsPath =
+    role === 'client'
+      ? '/livraisons_client'
+      : role === 'super-admin'
+      ? '/livraisons_super-admin'
+      : '/livraisons_back-office';
 
 const menuItems = [
   {
@@ -81,37 +87,51 @@ const menuItems = [
     text: 'Clients',
     icon: <FiUser size={22} />,
     path: clientPath,
-    roles: ['back-office', 'super-admin'],
+    roles: ['back-office', ],
   },
   {
     text: 'Chauffeurs',
     icon: <FiUsers size={22} />,
     path: utilisateursPath,
-    roles: ['back-office', 'super-admin'],
+    roles: ['back-office'],
+  },
+  {
+    text: 'Logs',
+    icon: <FiPackage size={22} />,
+    path: logsPath,
+    roles: ['super-admin'],
+  },
+  {
+    text: 'Back-Office',
+    icon: <FiUsers size={22} />,
+    path: boPath,
+    roles: ['super-admin'],
   },
   {
     text: 'Camions',
     icon: <FiTruck size={22} />,
     path: camionsPath,
-    roles: ['back-office', 'super-admin'],
+    roles: ['back-office'],
   },
   {
     text: 'Voyages',
     icon: <FiMap size={22} />,
     path: voyagesPath,
-    roles: ['client', 'back-office', 'super-admin'],
+    roles: ['client', 'back-office', ],
   },
   {
     text: 'Livraisons',
     icon: <FiPackage size={22} />,
     path: livraisonsPath,
-    roles: ['client', 'back-office', 'super-admin'],
+    roles: ['client', 'back-office'],
   },
-  
 ];
 
 
-  const filteredMenuItems = menuItems.filter(item => item.roles.includes(role || ''));
+  // const filteredMenuItems = menuItems.filter(item => item.roles.includes(role || ''));
+  const filteredMenuItems = menuItems.filter(
+    item => item.roles.includes(role || '') && item.path !== null
+  );
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -163,7 +183,7 @@ const menuItems = [
               transform: 'scale(1.1)',
             },
           }}
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate(dashboardPath)}
         />
       </Toolbar>
 
@@ -171,7 +191,7 @@ const menuItems = [
         {filteredMenuItems.map(({ text, icon, path }) => (
           <ListItemButton
             key={text}
-            onClick={() => navigate(path)}
+            onClick={() => navigate(path!)} // Le "!" dit à TypeScript "je te promets que ce n'est pas null"
             sx={{
               px: 3,
               py: 1.7,

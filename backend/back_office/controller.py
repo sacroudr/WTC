@@ -6,6 +6,48 @@ from .models import BackOfficeUpdate
 
 from .utils import hash_password
 
+# Fonction pour créer un utilisateur back-office
+from fastapi import HTTPException
+from .models import BackOfficeCreate  # Assure-toi d’avoir ce modèle dans models.py
+
+def create_backoffice(data: BackOfficeCreate):
+    # Vérifier que tous les champs requis sont présents
+    if not all([data.nom, data.prenom, data.mail, data.mot_de_passe, data.carte_national]):
+        raise HTTPException(status_code=400, detail="Tous les champs sont obligatoires")
+
+    # Vérifier si un utilisateur avec le même email existe déjà
+    existing_user = supabase.table("utilisateur").select("*").eq("mail", data.mail).execute()
+    if existing_user.data:
+        raise HTTPException(status_code=400, detail="Cet email est déjà utilisé.")
+    
+    # Hasher le mot de passe
+    hashed_password = hash_password(data.mot_de_passe)
+
+    # Créer l'utilisateur
+    new_user_data = {
+        "nom": data.nom,
+        "prenom": data.prenom,
+        "mail": data.mail,
+        "mot_de_passe": hashed_password,
+        "carte_national": data.carte_national,
+        "role": "back-office",
+        "date_creation": str(date.today())
+    }
+
+    response = supabase.table("utilisateur").insert(new_user_data).execute()
+
+    if not response.data:
+        raise HTTPException(status_code=500, detail="Erreur lors de la création du back-office")
+
+    utilisateur = response.data[0]
+    utilisateur.pop("mot_de_passe", None)
+
+    return {
+        "message": "Utilisateur back-office créé avec succès",
+        "utilisateur": utilisateur
+    }
+
+
 # Récupère les utilisateurs du back-office
 def get_all_backoffice():
     response = supabase.table("utilisateur").select("*").eq("role", "back-office").execute()
@@ -91,4 +133,20 @@ def delete_backoffice(id_utilisateur: int):
 
     return {
         "message": "Utilisateur back-office supprimé avec succès"
+    }
+    
+    
+# Récupérer le nombre total de clients
+def get_clients_count():
+    response = supabase.table("utilisateur").select("id_utilisateur", count="exact").eq("role", "client").execute()
+
+    if response.data is None:
+        raise HTTPException(status_code=500, detail="Erreur lors de la récupération du nombre de clients")
+
+
+    total_clients = response.count or 0
+
+    return {
+        "message": "Nombre total de clients récupéré avec succès",
+        "total": total_clients
     }

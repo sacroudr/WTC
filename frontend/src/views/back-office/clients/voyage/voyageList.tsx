@@ -32,7 +32,7 @@ interface Livraison {
   suivi: Suivi[];
 }
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 6;
 
 const VoyageList: React.FC<VoyageListProps> = ({ clientId }) => {
   const apiUrl = import.meta.env.VITE_API_BACK;
@@ -104,7 +104,7 @@ const VoyageList: React.FC<VoyageListProps> = ({ clientId }) => {
   }
 
   return (
-    <Box px={2} py={4} pb={16}>
+    <Box px={2} py={4} >
       {/* Barre de recherche */}
       <Box display="flex" justifyContent="center" sx={{ mb: 4 }}>
         <TextField
