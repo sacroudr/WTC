@@ -38,12 +38,18 @@ const DialogAddCamion: React.FC<DialogAddCamionProps> = ({ open, onClose, onCami
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
+      const token = localStorage.getItem('token');
       await axios.post(`${apiUrl}/camions/new`, {
         ...formData,
+        
         fin_validite_assurance: new Date(formData.fin_validite_assurance),
         fin_visite_technique: new Date(formData.fin_visite_technique),
         fin_carte_grise: new Date(formData.fin_carte_grise),
         fin_extincteur: new Date(formData.fin_extincteur),
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       onClose();
       onCamionAdded?.();

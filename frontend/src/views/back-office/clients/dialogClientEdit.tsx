@@ -65,7 +65,14 @@ const DialogClientEdit: React.FC<Props> = ({ open, onClose, idClient, onClientUp
     if (!idClient) return;
     setSubmitting(true);
     setError(null);
-    axios.put(`${apiUrl}/client/update/${idClient}`, formData)
+    const token = localStorage.getItem('token');
+    axios.put(`${apiUrl}/client/update/${idClient}`, formData, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
       .then(res => {
         onClientUpdated(res.data.client || res.data);
         onClose();

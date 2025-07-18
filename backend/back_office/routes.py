@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from .controller import get_all_backoffice, get_backoffice_by_id, update_backoffice, delete_backoffice, create_backoffice, get_clients_count
+from .controller import get_all_backoffice, get_backoffice_by_id, update_backoffice, delete_backoffice, create_backoffice
 
 from .models import BackOfficeUpdate, BackOfficeCreate
 
@@ -29,7 +29,3 @@ def modifier_backoffice(id_utilisateur: int, data: BackOfficeUpdate):
 @router.delete("/delete/{id_utilisateur}")
 def supprimer_backoffice(id_utilisateur: int):
     return delete_backoffice(id_utilisateur)
-
-@router.get("/client/count")
-def clients_count():
-    return get_clients_count()

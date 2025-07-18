@@ -72,7 +72,15 @@ const DialogAddChauffeur: React.FC<DialogAddChauffeurProps> = ({ open, handleClo
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      await axios.post(`${apiUrl}/chauffeurs/new`, formData);
+      const token = localStorage.getItem('token');
+      await axios.post(`${apiUrl}/chauffeurs/new`, 
+        formData,
+          {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+      );
       handleClose();
       onChauffeurAdded?.();
       setFormData({

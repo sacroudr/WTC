@@ -64,7 +64,17 @@ const DialogEditChauffeur: React.FC<DialogEditChauffeurProps> = ({
     if (!chauffeur) return;
     setSubmitting(true);
     try {
-      await axios.put(`${apiUrl}/chauffeurs/update/${chauffeur.id_chauffeur}`, formData);
+      const token = localStorage.getItem('token');
+      // await axios.put(`${apiUrl}/chauffeurs/update/${chauffeur.id_chauffeur}`, formData);
+      await axios.put(
+      `${apiUrl}/chauffeurs/update/${chauffeur.id_chauffeur}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
       onUpdated();
       onClose();
     } catch (err: unknown) {

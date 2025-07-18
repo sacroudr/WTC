@@ -83,9 +83,17 @@ const VoyageContent: React.FC = () => {
       adresse_depart: formData.adresse_depart,
       adresse_arrive: formData.adresse_arrive,
     };
+    const token = localStorage.getItem('token');
 
-    const response = await axios.post(`${apiUrl}/voyages/new`, payload);
-    setSuccessMessage(`Voyage créé avec succès : ${response.data.numero_voyage}`);
+    const response = await axios.post(`${apiUrl}/voyages/new`, payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    setSuccessMessage(`Voyage créé avec succès : ${response.data.numero_voyage}`
+    );
     setFormData({
       id_client: '',
       id_chauffeur: '',

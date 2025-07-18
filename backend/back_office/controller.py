@@ -2,13 +2,11 @@ from fastapi import HTTPException
 from config.supabase import supabase
 from datetime import date
 
-from .models import BackOfficeUpdate
+from .models import BackOfficeUpdate, BackOfficeCreate
 
 from .utils import hash_password
 
 # Fonction pour créer un utilisateur back-office
-from fastapi import HTTPException
-from .models import BackOfficeCreate  # Assure-toi d’avoir ce modèle dans models.py
 
 def create_backoffice(data: BackOfficeCreate):
     # Vérifier que tous les champs requis sont présents
@@ -133,20 +131,4 @@ def delete_backoffice(id_utilisateur: int):
 
     return {
         "message": "Utilisateur back-office supprimé avec succès"
-    }
-    
-    
-# Récupérer le nombre total de clients
-def get_clients_count():
-    response = supabase.table("utilisateur").select("id_utilisateur", count="exact").eq("role", "client").execute()
-
-    if response.data is None:
-        raise HTTPException(status_code=500, detail="Erreur lors de la récupération du nombre de clients")
-
-
-    total_clients = response.count or 0
-
-    return {
-        "message": "Nombre total de clients récupéré avec succès",
-        "total": total_clients
     }

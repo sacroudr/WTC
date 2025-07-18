@@ -9,6 +9,7 @@ from client.routes import router as client_router
 from camion.routes import router as camion_router
 from voyage.routes import router as voyage_router
 from suivi_livraison.routes import router as suivi_livraison_router
+from super_admin.routes import router as super_admin_router
 
 app = FastAPI()
 
@@ -34,3 +35,4 @@ app.include_router(client_router)
 app.include_router(camion_router)
 app.include_router(voyage_router)
 app.include_router(suivi_livraison_router)
+app.include_router(super_admin_router)

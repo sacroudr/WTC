@@ -72,7 +72,14 @@ const DialogCamionEdit: React.FC<Props> = ({ open, handleClose, idCamion, onCami
     if (idCamion === null) return;
     setSubmitting(true);
     try {
-      await axios.put(`${apiUrl}/camions/update/${idCamion}`, camion);
+      const token = localStorage.getItem('token');
+      await axios.put(`${apiUrl}/camions/update/${idCamion}`, camion,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       onCamionUpdated();
       handleClose();
     } catch (err) {

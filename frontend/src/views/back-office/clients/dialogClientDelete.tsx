@@ -31,7 +31,14 @@ const DialogClientDelete: React.FC<DialogClientDeleteProps> = ({
     setError(null);
 
     try {
-      await axios.delete(`${apiUrl}/client/delete/${idClient}`);
+      const token = localStorage.getItem('token');
+      await axios.delete(`${apiUrl}/client/delete/${idClient}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       onClientDeleted();
       handleClose();
     } catch (err) {

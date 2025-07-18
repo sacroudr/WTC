@@ -3,9 +3,15 @@ from datetime import datetime, timedelta
 import jwt
 import os
 from dotenv import load_dotenv
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import HTTPException, Depends
+from jose import jwt, JWTError
 
 # Charger les variables d'environnement si tu utilises .env
 load_dotenv()
+
+# Système de sécurité
+security = HTTPBearer()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -27,3 +33,11 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=1
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Token invalide ou expiré")

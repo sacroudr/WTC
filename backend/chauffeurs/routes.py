@@ -1,9 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from .controller import create_chauffeur, get_chauffeur_by_id, get_all_chauffeurs, update_chauffeur, delete_chauffeur
 
 from .models import ChauffeurCreate
 from .models import ChauffeurUpdate
+
+from authentification.utils import get_current_user
 
 router = APIRouter(prefix="/chauffeurs", tags=["Chauffeurs"])
 
@@ -19,15 +21,15 @@ def lister_chauffeur_par_id(id_chauffeur: int):
 
 #route pour créer un chauffeur
 @router.post("/new")
-def creer_chauffeur(data: ChauffeurCreate):
-    return create_chauffeur(data)
+def creer_chauffeur(data: ChauffeurCreate, current_user: dict = Depends(get_current_user)):
+    return create_chauffeur(data, current_user)
 
 #route pour modifier un chauffeur
 @router.put("/update/{id_chauffeur}")
-def modifier_chauffeur(id_chauffeur: int, data: ChauffeurUpdate):
-    return update_chauffeur(id_chauffeur, data)
+def modifier_chauffeur(id_chauffeur: int, data: ChauffeurUpdate, current_user: dict = Depends(get_current_user)):
+    return update_chauffeur(id_chauffeur, data, current_user)
 
-#route pour supprimer un chauffeur
+# #route pour supprimer un chauffeur
 @router.delete("/delete/{id_chauffeur}")
-def supprimer_chauffeur(id_chauffeur: int):
-    return delete_chauffeur(id_chauffeur)
+def supprimer_chauffeur(id_chauffeur: int, current_user: dict = Depends(get_current_user)):
+    return delete_chauffeur(id_chauffeur, current_user)

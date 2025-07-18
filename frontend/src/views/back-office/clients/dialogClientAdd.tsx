@@ -47,7 +47,14 @@ const DialogClientAdd: React.FC<DialogClientAddProps> = ({ open, onClose, onClie
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      await axios.post(`${apiUrl}/client/new`, formData);
+      const token = localStorage.getItem('token');
+      await axios.post(`${apiUrl}/client/new`, formData, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       onClientAdded?.();
       onClose();
       setFormData({

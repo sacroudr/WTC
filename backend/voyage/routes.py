@@ -1,8 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from .controller import get_all_voyages, get_voyages_by_id, create_voyage, get_voyages_by_client, get_voyage_by_client_and_voyage_id
 
 from .models import VoyageCreate
+
+from authentification.utils import get_current_user
 
 router = APIRouter(prefix="/voyages", tags=["Voyages"])
 
@@ -28,5 +30,5 @@ def get_voyage_by_client(id_client: int, id_voyage: int):
 
 #route pour créer un voyage
 @router.post("/new")
-def creer_voyage(data: VoyageCreate):
-    return create_voyage(data)
+def creer_voyage(data: VoyageCreate, current_user: dict = Depends(get_current_user)):
+    return create_voyage(data, current_user)

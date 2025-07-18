@@ -40,7 +40,14 @@ const DialogDeleteCamion: React.FC<DialogDeleteCamionProps> = ({
     setError(null);
 
     try {
-      await axios.delete(`${apiUrl}/camions/delete/${idCamion}`);
+      const token = localStorage.getItem('token');
+      await axios.delete(`${apiUrl}/camions/delete/${idCamion}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       onCamionDeleted();
       handleClose();
     } catch (err: unknown) {

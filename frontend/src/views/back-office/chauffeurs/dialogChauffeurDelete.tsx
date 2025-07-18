@@ -38,26 +38,56 @@ const DialogChauffeurDelete: React.FC<DialogChauffeurDeleteProps> = ({
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const handleConfirm = async () => {
-    if (!chauffeur) return;
+  // const handleConfirm = async () => {
+  //   if (!chauffeur) return;
 
-    setLoading(true);
-    setError(null);
+  //   setLoading(true);
+  //   setError(null);
 
-    try {
-      await axios.delete(`${apiUrl}/chauffeurs/delete/${chauffeur.id_chauffeur}`);
-      onConfirm(`Le chauffeur ${chauffeur.utilisateur?.prenom} ${chauffeur.utilisateur?.nom} a été supprimé avec succès.`);
-      onClose();
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.detail || 'Suppression impossible');
-      } else {
-        setError('Erreur inattendue');
+  //   try {
+  //     await axios.delete(`${apiUrl}/chauffeurs/delete/${chauffeur.id_chauffeur}`);
+  //     onConfirm(`Le chauffeur ${chauffeur.utilisateur?.prenom} ${chauffeur.utilisateur?.nom} a été supprimé avec succès.`);
+  //     onClose();
+  //   } catch (error: unknown) {
+  //     if (axios.isAxiosError(error)) {
+  //       setError(error.response?.data?.detail || 'Suppression impossible');
+  //     } else {
+  //       setError('Erreur inattendue');
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+const handleConfirm = async () => {
+  if (!chauffeur) return;
+
+  setLoading(true);
+  setError(null);
+
+  try {
+    const token = localStorage.getItem('token'); // récupère ton token JWT
+    await axios.delete(
+      `${apiUrl}/chauffeurs/delete/${chauffeur.id_chauffeur}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } finally {
-      setLoading(false);
+    );
+    onConfirm(
+      `Le chauffeur ${chauffeur.utilisateur?.prenom} ${chauffeur.utilisateur?.nom} a été supprimé avec succès.`
+    );
+    onClose();
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      setError(error.response?.data?.detail || 'Suppression impossible');
+    } else {
+      setError('Erreur inattendue');
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Dialog
