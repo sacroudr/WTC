@@ -11,7 +11,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiGrid, FiUsers, FiTruck, FiLogOut, FiPackage,  FiMap, FiUser } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiTruck, FiLogOut, FiPackage,  FiMap, FiUser, FiFileText } from 'react-icons/fi';
 // import WtcLogo from '../assets/WTC_LOGO_JPG_v2_removed.png';
 import WtcLogo from '../assets/WTC_LOGO_CROPPED.png';
 import { ListItemButton } from '@mui/material';
@@ -97,7 +97,7 @@ const menuItems = [
   },
   {
     text: 'Logs',
-    icon: <FiPackage size={22} />,
+    icon: <FiFileText  size={22} />,
     path: logsPath,
     roles: ['super-admin'],
   },

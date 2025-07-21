@@ -287,7 +287,10 @@ const ChauffeurContent: React.FC<ChauffeurContentProps> = ({ refreshTrigger }) =
         open={editDialogOpen}
         onClose={handleCloseEditDialog}
         chauffeur={chauffeurToEdit}
-        onUpdated={handleChauffeurUpdated}
+        onUpdated={() => {
+          handleChauffeurUpdated();
+          setSuccessMessage("Chauffeur modifié avec succès !");
+        }}
       />
 
       {/* Dialogue profil chauffeur */}

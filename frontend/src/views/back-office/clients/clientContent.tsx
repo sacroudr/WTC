@@ -259,7 +259,10 @@ const handleClientDeleted = () => {
         open={editOpen}
         onClose={handleCloseEdit}
         idClient={selectedEditId}
-        onClientUpdated={handleClientUpdated}
+        onClientUpdated={() => {
+          handleClientUpdated();
+          setSuccessMsg("Client modifié avec succès !");
+        }}
         />
 
 

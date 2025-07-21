@@ -190,6 +190,7 @@ def update_camion(id_camion: int, data: CamionUpdate, current_user: dict):
             "action": "MISE_A_JOUR_CAMION",
             "cible": json.dumps({
                 "id_camion": id_camion,
+                "matricule": existing.get("matricule"),
                 "modifications": modifications
             }),
             "date_action": datetime.now().isoformat()

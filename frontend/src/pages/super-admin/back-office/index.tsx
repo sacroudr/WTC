@@ -16,7 +16,7 @@ const Bo_SuperAdmin: React.FC = () => {
 
   return (
     <Fade in timeout={700}>
-      <Box sx={{ marginLeft: "275px", padding: "20px" }}>
+      <Box sx={{ marginLeft: "290px" }}>
           <Box mb={2}>
               <Box display="flex" alignItems="center" mb={1}>
                   <Typography

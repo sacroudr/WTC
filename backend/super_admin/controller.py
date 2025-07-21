@@ -135,5 +135,17 @@ def get_pending_voyages_count():
         raise HTTPException(status_code=500, detail=f"Erreur interne : {e}")
 
 def get_historique_actions():
-    resp = supabase.table("historique_actions").select("*").execute()
+    resp = supabase.table("historique_actions").select("*, id_utilisateur(nom, prenom)").execute()
+    return resp.data
+
+def get_historique_action_by_id(id_action: int):
+    resp = supabase.table("historique_actions") \
+        .select("*, id_utilisateur(nom, prenom)") \
+        .eq("id_action", id_action) \
+        .single() \
+        .execute()
+    
+    if not resp.data:
+        raise HTTPException(status_code=404, detail="Action non trouvée")
+
     return resp.data

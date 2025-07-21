@@ -137,7 +137,7 @@ def update_client(id_client: int, data: ClientUpdate, current_user: dict):
         supabase.table("utilisateur").update(utilisateur_update).eq("id_utilisateur", id_utilisateur).execute()
         for key, new_value in utilisateur_update.items():
             ancien = utilisateur_avant.get(key)
-            utilisateur_diff[key] = {"avant": ancien, "après": new_value}
+            utilisateur_diff[key] = {"avant": ancien, "apres": new_value}
 
     # 2. Mise à jour des données client
     client_update = {
@@ -162,6 +162,8 @@ def update_client(id_client: int, data: ClientUpdate, current_user: dict):
         "action": "MISE_A_JOUR_CLIENT",
         "cible": json.dumps({
             "id_client": id_client,
+            "nom": utilisateur_avant.get("nom"),
+            "prenom": utilisateur_avant.get("prenom"),
             "modifications": {
                 "utilisateur": utilisateur_diff,
                 "client": client_diff
@@ -177,7 +179,9 @@ def update_client(id_client: int, data: ClientUpdate, current_user: dict):
             "client": client_diff
         }
     }
-# #Permet de supprimer un client
+    
+    
+# # #Permet de supprimer un client
 def delete_client(id_client: int, current_user: dict):
     # 1. Vérifie si le client existe
     client_resp = supabase.table("client").select("id_utilisateur").eq("id_client", id_client).single().execute()
@@ -187,23 +191,33 @@ def delete_client(id_client: int, current_user: dict):
 
     id_utilisateur = client_resp.data["id_utilisateur"]
 
-    # 2. Supprimer le client
+    # 2. Récupère les infos utilisateur (nom et prénom)
+    utilisateur_resp = supabase.table("utilisateur").select("nom", "prenom").eq("id_utilisateur", id_utilisateur).single().execute()
+
+    if not utilisateur_resp.data:
+        raise HTTPException(status_code=404, detail="Utilisateur associé non trouvé")
+
+    nom = utilisateur_resp.data["nom"]
+    prenom = utilisateur_resp.data["prenom"]
+
+    # 3. Supprimer le client
     delete_client_resp = supabase.table("client").delete().eq("id_client", id_client).execute()
     if not delete_client_resp.data:
         raise HTTPException(status_code=500, detail="Erreur lors de la suppression du client")
 
-    # 3. Supprimer l'utilisateur associé
+    # 4. Supprimer l'utilisateur associé
     delete_utilisateur_resp = supabase.table("utilisateur").delete().eq("id_utilisateur", id_utilisateur).execute()
     if not delete_utilisateur_resp.data:
         raise HTTPException(status_code=500, detail="Erreur lors de la suppression de l'utilisateur")
 
-    # 4. Log de l'action : suppression client
+    # 5. Log de l'action avec nom + prénom du client supprimé
     supabase.table("historique_actions").insert({
         "id_utilisateur": current_user["id_utilisateur"],
         "action": "SUPPRESSION_CLIENT",
         "cible": json.dumps({
             "id_client": id_client,
-            "id_utilisateur": id_utilisateur
+            "nom": nom,
+            "prenom": prenom
         }),
         "date_action": datetime.now().isoformat()
     }).execute()

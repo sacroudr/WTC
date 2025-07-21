@@ -47,7 +47,7 @@ const DashboardHeader: React.FC = () => {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingX: 2,
+        paddingX: 1,
       }}
     >
       <Typography variant="h4" fontWeight="bold" color="#333">

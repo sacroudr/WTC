@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from .controller import get_clients_count, get_chauffeurs_count, get_camions_count, get_pending_voyages_count, get_historique_actions
+from .controller import get_clients_count, get_chauffeurs_count, get_camions_count, get_pending_voyages_count, get_historique_actions, get_historique_action_by_id
 
 
 router = APIRouter(prefix="/superadmin", tags=["Superadmin"])
@@ -29,3 +29,7 @@ def voyage_count():
 @router.get("/historique-actions")
 def historique_actions():
     return get_historique_actions()
+
+@router.get("/actions/{id_action}")
+def lire_action_par_id(id_action: int):
+    return get_historique_action_by_id(id_action)

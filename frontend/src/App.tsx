@@ -18,7 +18,7 @@ import RegisterPage from './pages/register';
 import Camions_BackOffice from './pages/back-office/camions';
 import Voyages_BackOffice from './pages/back-office/voyages';
 import Livraison_Client from './pages/client/livraisons';
-import Camion_SuperAdmin from './pages/super-admin/camions';
+// import Camion_SuperAdmin from './pages/super-admin/camions';
 import Livraisons_BackOffice from './pages/back-office/livraisons';
 import Chauffeurs_BackOffice from './pages/back-office/chauffeurs';
 import Client_BackOffice from './pages/back-office/client';
@@ -61,7 +61,7 @@ const App: React.FC = () => {
             <Route path="/livraisons_client" element={<Livraison_Client />} />
 
             <Route path="/bo_super-admin" element={<Bo_SuperAdmin />} />
-            <Route path="/camions_super-admin" element={<Camion_SuperAdmin />} />
+            {/* <Route path="/camions_super-admin" element={<Camion_SuperAdmin />} /> */}
             <Route path="/logs_super-admin" element={<Logs_SuperAdmin />} />
           </Route>
           
