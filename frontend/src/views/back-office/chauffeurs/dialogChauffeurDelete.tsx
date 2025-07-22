@@ -38,34 +38,25 @@ const DialogChauffeurDelete: React.FC<DialogChauffeurDeleteProps> = ({
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  // const handleConfirm = async () => {
-  //   if (!chauffeur) return;
+  React.useEffect(() => {
+  if (open) {
+    setError(null); // réinitialise l'erreur quand le dialog s'ouvre
+  }
+}, [open]);
 
-  //   setLoading(true);
-  //   setError(null);
-
-  //   try {
-  //     await axios.delete(`${apiUrl}/chauffeurs/delete/${chauffeur.id_chauffeur}`);
-  //     onConfirm(`Le chauffeur ${chauffeur.utilisateur?.prenom} ${chauffeur.utilisateur?.nom} a été supprimé avec succès.`);
-  //     onClose();
-  //   } catch (error: unknown) {
-  //     if (axios.isAxiosError(error)) {
-  //       setError(error.response?.data?.detail || 'Suppression impossible');
-  //     } else {
-  //       setError('Erreur inattendue');
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 const handleConfirm = async () => {
   if (!chauffeur) return;
+
+  if (chauffeur.disponibilite === false) {
+    setError("Ce chauffeur ne peut pas être supprimé car il a un voyage à faire.");
+    return;
+  }
 
   setLoading(true);
   setError(null);
 
   try {
-    const token = localStorage.getItem('token'); // récupère ton token JWT
+    const token = localStorage.getItem('token');
     await axios.delete(
       `${apiUrl}/chauffeurs/delete/${chauffeur.id_chauffeur}`,
       {

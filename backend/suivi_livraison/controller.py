@@ -5,6 +5,48 @@ from typing import List
 from datetime import datetime
 
 
+# def add_suivi(id_livraison: int, statut: str, localisation: str, commentaire: str = ""):
+#     try:
+#         suivi_data = {
+#             "id_livraison": id_livraison,
+#             "statut": statut,
+#             "localisation": localisation,
+#             "date_maj": datetime.utcnow().isoformat(),
+#             "commentaire": commentaire
+#         }
+
+#         # Insertion du suivi dans historique_suivi
+#         resp = supabase.table("historique_suivi").insert(suivi_data).execute()
+
+#         if not resp.data:
+#             raise HTTPException(status_code=500, detail="Erreur lors de l'ajout du suivi")
+
+#         # Mise à jour du statut et localisation dans livraison
+#         supabase.table("livraison").update({
+#             "statut": statut,
+#             "localisation": localisation,
+#             "date_maj": datetime.utcnow().isoformat()
+#         }).eq("id_livraison", id_livraison).execute()
+
+#         # Récupérer l'id_voyage correspondant à cette livraison
+#         livraison_resp = supabase.table("livraison").select("id_voyage").eq("id_livraison", id_livraison).single().execute()
+
+#         if not livraison_resp.data:
+#             raise HTTPException(status_code=404, detail="Livraison non trouvée")
+
+#         id_voyage = livraison_resp.data["id_voyage"]
+
+#         # Mise à jour du statut dans la table voyage
+#         supabase.table("voyage").update({
+#             "statut": statut,
+            
+#         }).eq("id_voyage", id_voyage).execute()
+
+#         return {"message": "Suivi ajouté et statut voyage mis à jour", "suivi": resp.data[0]}
+
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
 def add_suivi(id_livraison: int, statut: str, localisation: str, commentaire: str = ""):
     try:
         suivi_data = {
@@ -39,8 +81,20 @@ def add_suivi(id_livraison: int, statut: str, localisation: str, commentaire: st
         # Mise à jour du statut dans la table voyage
         supabase.table("voyage").update({
             "statut": statut,
-            
         }).eq("id_voyage", id_voyage).execute()
+
+        # ✅ Si livraison effectuée → rendre le chauffeur disponible
+        if statut.lower() == "livraison effectuée":
+            voyage_resp = supabase.table("voyage").select("id_chauffeur").eq("id_voyage", id_voyage).single().execute()
+
+            if not voyage_resp.data:
+                raise HTTPException(status_code=404, detail="Voyage non trouvé pour récupération du chauffeur")
+
+            id_chauffeur = voyage_resp.data["id_chauffeur"]
+
+            supabase.table("chauffeur").update({
+                "disponibilite": True
+            }).eq("id_chauffeur", id_chauffeur).execute()
 
         return {"message": "Suivi ajouté et statut voyage mis à jour", "suivi": resp.data[0]}
 

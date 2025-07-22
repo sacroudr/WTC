@@ -277,8 +277,11 @@ def delete_chauffeur(id_chauffeur: int, current_user: dict):
     nom = chauffeur["utilisateur"]["nom"]
     prenom = chauffeur["utilisateur"]["prenom"]
 
-    # Supprimer les voyages liés à ce chauffeur
-    supabase.table("voyage").delete().eq("id_chauffeur", id_chauffeur).execute()
+    # Détacher les voyages du chauffeur avant suppression
+    supabase.table("voyage").update({
+        "id_chauffeur": None,
+        "statut": "Livraison effectué, Chauffeur ou camion supprimé"  # si tu veux tracer la suppression
+    }).eq("id_chauffeur", id_chauffeur).execute()
 
     # Supprimer le chauffeur
     supabase.table("chauffeur").delete().eq("id_chauffeur", id_chauffeur).execute()

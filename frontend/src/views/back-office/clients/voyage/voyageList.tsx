@@ -159,7 +159,12 @@ const VoyageList: React.FC<VoyageListProps> = ({ clientId }) => {
 
       <Box display="flex" flexWrap="wrap" justifyContent="center" gap={3}>
         {voyagesToShow.map((voyage) => {
-          const isDelivered = voyage.statut?.toLowerCase().trim() === 'livraison effectuée';
+          // const isDelivered = voyage.statut?.toLowerCase().trim() === 'livraison effectuée';
+          const statutNormalized = voyage.statut?.toLowerCase().trim() || '';
+          const isDelivered = statutNormalized.includes('livraison effectuée') 
+                          || statutNormalized.includes('camion supprimé') 
+                          || statutNormalized.includes('chauffeur supprimé');
+
           const isFuture = new Date(voyage.date_depart) > new Date();
 
           let backgroundColor = '#FFFACD'; // Jaune clair

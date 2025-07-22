@@ -18,6 +18,7 @@ import {
   Alert,
   Snackbar,
   CircularProgress,
+  Typography,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
@@ -186,6 +187,7 @@ const ChauffeurContent: React.FC<ChauffeurContentProps> = ({ refreshTrigger }) =
             <TableRow>
               <TableCell sx={{ color: 'text.primary', fontWeight: 600 }}>Nom</TableCell>
               <TableCell sx={{ color: 'text.primary', fontWeight: 600 }}>Prénom</TableCell>
+              <TableCell sx={{ color: 'text.primary', fontWeight: 600 }}>Camion</TableCell>
               <TableCell sx={{ color: 'text.primary', fontWeight: 600 }}>Téléphone</TableCell>
               <TableCell sx={{ color: 'text.primary', fontWeight: 600 }}>Email</TableCell>
               <TableCell sx={{ color: 'text.primary', fontWeight: 600 }}>Action</TableCell>
@@ -236,6 +238,21 @@ const ChauffeurContent: React.FC<ChauffeurContentProps> = ({ refreshTrigger }) =
                       </Box>
                     </TableCell>
                     <TableCell>{ch.utilisateur?.prenom}</TableCell>
+                    <TableCell>
+                      {ch.camions && ch.camions.length > 0
+                        ? ch.camions.map(c => c.matricule).join(', ')
+                        : (
+                          <Typography 
+                            sx={{ 
+                              color: '#E42422', 
+                              fontStyle: 'italic', 
+                              fontWeight: 'bold' 
+                            }}
+                          >
+                            Non affectée
+                          </Typography>
+                        )}
+                    </TableCell>
                     <TableCell>{ch.telephone}</TableCell>
                     <TableCell>{ch.utilisateur?.mail}</TableCell>
                     <TableCell>

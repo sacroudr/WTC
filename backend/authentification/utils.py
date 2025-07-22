@@ -24,7 +24,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 SECRET_KEY = os.getenv("SECRET_KEY", "SUPABASE_KEY")
 ALGORITHM = "HS256"
 
-def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=1)) -> str:
+def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=4)) -> str:
     """
     Crée un token JWT à partir d'un dictionnaire de données utilisateur.
     """

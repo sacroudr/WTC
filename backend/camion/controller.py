@@ -215,6 +215,13 @@ def delete_camion(id_camion: int, current_user: dict):
             raise HTTPException(status_code=404, detail="Camion non trouvé")
 
         camion_supprime = existing.data
+        
+        # Détacher les voyages du chauffeur avant suppression
+        supabase.table("voyage").update({
+            "id_camion": None,
+            "statut": "Livraison effectué, Chauffeur ou camion supprimé"  # si tu veux tracer la suppression
+        }).eq("id_camion", id_camion).execute()
+
 
         # 🗑️ Supprimer le camion
         delete_response = supabase.table("camion").delete().eq("id_camion", id_camion).execute()

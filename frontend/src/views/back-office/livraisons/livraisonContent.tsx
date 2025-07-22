@@ -156,6 +156,7 @@ const LivraisonContent: React.FC = () => {
 
               <TableBody>
                 {[...voyages]
+                  .filter((voyage) => voyage.statut !== "Livraison effectuée")
                   .sort((a, b) => a.id_voyage - b.id_voyage)
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((voyage) => (
@@ -172,6 +173,7 @@ const LivraisonContent: React.FC = () => {
                       </TableCell>
                     </TableRow>
                 ))}
+
               </TableBody>
             </Table>
 
