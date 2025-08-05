@@ -1,6 +1,7 @@
 from datetime import datetime
 from fastapi import HTTPException
 from types import SimpleNamespace
+from .utils import hash_password
 from config.supabase import supabase
 
 from .models import ChauffeurCreate
@@ -81,13 +82,22 @@ def get_chauffeur_by_id(id_chauffeur: int):
 
 #Permet de créer un chauffeur et son utilisateur associé dans la base de données
 def create_chauffeur(data: ChauffeurCreate, current_user: dict):
+    # Vérifier si un utilisateur avec le même email existe déjà
+    existing_user = supabase.table("utilisateur").select("*").eq("mail", data.mail).execute()
+    if existing_user.data:
+        raise HTTPException(status_code=400, detail="Cet email est déjà utilisé.")
+    
+    # Hasher le mot de passe
+    hashed_password = hash_password(data.mot_de_passe)
+    print("Hahowa  lpassword hashed a tbi:", hashed_password)
+    
     # 1️⃣ Créer l'utilisateur
     utilisateur_resp = supabase.table("utilisateur").insert({
         "nom": data.nom,
         "prenom": data.prenom,
         "carte_national": data.carte_national,
         "mail": data.mail,
-        "mot_de_passe": None,
+        "mot_de_passe": hashed_password,
         "role": "chauffeur",
         "date_creation": datetime.now().isoformat()
     }).execute()
@@ -302,3 +312,35 @@ def delete_chauffeur(id_chauffeur: int, current_user: dict):
     }).execute()
 
     return {"message": "Chauffeur et utilisateur associé supprimés avec succès"}
+
+
+
+# Permet de récupérer les voyages à faire pour un chauffeur donné
+# def get_voyages_par_chauffeur(id_chauffeur: int):
+#     # Requête pour récupérer les voyages où id_chauffeur = id_chauffeur
+#     response = supabase.table("voyage").select("*").eq("id_chauffeur", id_chauffeur).execute()
+
+#     # Vérifier qu'on a bien des données
+#     if not response.data:
+#         raise HTTPException(status_code=404, detail="Aucun voyage trouvé pour ce chauffeur")
+
+#     # Retourner la liste des voyages
+#     return response.data
+
+
+def get_voyages_par_chauffeur(id_utilisateur: int):
+    # 1. Récupérer l'id_chauffeur correspondant à l'id_utilisateur
+    chauffeur_resp = supabase.table("chauffeur").select("id_chauffeur").eq("id_utilisateur", id_utilisateur).execute()
+
+    if not chauffeur_resp.data or len(chauffeur_resp.data) == 0:
+        raise HTTPException(status_code=404, detail="Chauffeur non trouvé pour cet utilisateur")
+
+    id_chauffeur = chauffeur_resp.data[0]['id_chauffeur']
+
+    # 2. Récupérer les voyages liés à cet id_chauffeur
+    voyages_resp = supabase.table("voyage").select("*").eq("id_chauffeur", id_chauffeur).execute()
+
+    if not voyages_resp.data:
+        raise HTTPException(status_code=404, detail="Aucun voyage trouvé pour ce chauffeur")
+
+    return voyages_resp.data

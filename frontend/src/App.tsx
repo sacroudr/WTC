@@ -25,6 +25,10 @@ import Client_BackOffice from './pages/back-office/client';
 import ClientContent from './views/back-office/clients/voyage/voyageContent';
 import Bo_SuperAdmin from './pages/super-admin/back-office';
 import Logs_SuperAdmin from './pages/super-admin/logs';
+import NotFoundPage from './pages/errors/notFoundPage';
+import ForbiddenPage from './pages/errors/forbiddenPage';
+import InternalErrorPage from './pages/errors/internalErrorPage';
+import Tracker from './pages/tracker';
 
 const App: React.FC = () => {
   return (
@@ -38,12 +42,14 @@ const App: React.FC = () => {
           {/* Page de login (sans layout) */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          
 
           {/* ✅ Pages avec navbar */}
           <Route element={<Layout />}>
             <Route path="/accueil" element={<Accueil />} />
             <Route path="/a-propos" element={<Apropos />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/tracker" element={<Tracker />} />
           </Route>
           
           <Route element={<Layout2 />}>
@@ -64,6 +70,10 @@ const App: React.FC = () => {
             {/* <Route path="/camions_super-admin" element={<Camion_SuperAdmin />} /> */}
             <Route path="/logs_super-admin" element={<Logs_SuperAdmin />} />
           </Route>
+          
+          <Route path="*" element={<NotFoundPage />} />
+          <Route path="/forbidden" element={<ForbiddenPage />} />
+          <Route path="/error" element={<InternalErrorPage />} />
           
         </Routes>
       </Router>

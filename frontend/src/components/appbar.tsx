@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AppBar, Toolbar, IconButton, Box, Drawer, Typography, List, ListItem, ListItemText, ListItemAvatar, Avatar, Divider } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import CircleIcon from "@mui/icons-material/Circle";
+import ProfileUserPopover from "./profileUser";
 
 
 
@@ -10,7 +11,15 @@ import CircleIcon from "@mui/icons-material/Circle";
 // Composant AppBar avec notifications
 const AppBarComponent: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);  // État pour gérer l'ouverture/fermeture du tiroir
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
+  const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
 
  function getInitialsFromToken(): string {
   try {
@@ -102,17 +111,22 @@ const AppBarComponent: React.FC = () => {
 
           {/* Avatar utilisateur stylisé */}
           <Avatar
-                sx={{
-                    width: 36,
-                    height: 36,
-                    backgroundColor: "#EAE2F8",
-                    color: "#7E57C2",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                }}
-                >
-                {getInitialsFromToken()}
-            </Avatar>
+            sx={{
+              width: 36,
+              height: 36,
+              backgroundColor: "#EAE2F8",
+              color: "#7E57C2",
+              fontWeight: "bold",
+              fontSize: "14px",
+              cursor: "pointer",
+              "&:hover": {
+                boxShadow: "0 0 8px rgba(126, 87, 194, 0.6)",
+              },
+            }}
+            onClick={handleAvatarClick}
+          >
+            {getInitialsFromToken()}
+          </Avatar>
         </Box>
       </Toolbar>
     </AppBar>
@@ -186,6 +200,9 @@ const AppBarComponent: React.FC = () => {
           </Box>
         </Box>
     </Drawer>
+    <ProfileUserPopover anchorEl={anchorEl} open={open} onClose={handleClose} />
+
+
   </Box>
 );
 

@@ -34,6 +34,7 @@ const DialogAddChauffeur: React.FC<DialogAddChauffeurProps> = ({ open, handleClo
     carte_national: '',
     telephone: '',
     mail: '',
+    mot_de_passe: '',
     num_permis: '',
     disponibilite: true,
     id_camion: '',
@@ -89,6 +90,7 @@ const DialogAddChauffeur: React.FC<DialogAddChauffeurProps> = ({ open, handleClo
         carte_national: '',
         telephone: '',
         mail: '',
+        mot_de_passe: '',
         num_permis: '',
         disponibilite: true,
         id_camion: '',
@@ -108,6 +110,7 @@ const DialogAddChauffeur: React.FC<DialogAddChauffeurProps> = ({ open, handleClo
     carte_national: '',
     telephone: '',
     mail: '',
+    mot_de_passe: '',
     num_permis: '',
     disponibilite: true,
     id_camion: '',
@@ -178,6 +181,17 @@ const DialogAddChauffeur: React.FC<DialogAddChauffeurProps> = ({ open, handleClo
             <Box sx={{ display: 'flex', gap: 2 }}>
               <TextField name="mail" label="Email" type="email" fullWidth size="small" value={formData.mail} onChange={handleChange} />
               <TextField name="num_permis" label="Numéro de permis" fullWidth size="small" value={formData.num_permis} onChange={handleChange} />
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                name="mot_de_passe"
+                label="Mot de passe"
+                type="password"
+                fullWidth
+                size="small"
+                value={formData.mot_de_passe}
+                onChange={handleChange}
+              />
             </Box>
 
             <Typography variant="subtitle1" fontWeight="bold" color="primary">Affectation</Typography>

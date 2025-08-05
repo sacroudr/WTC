@@ -17,6 +17,7 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",        # React dev  # ajoute ton domaine en production si besoin
     "http://192.168.1.16:8000",
+    "http://192.168.30.208:8000",
 ]
 
 app.add_middleware(

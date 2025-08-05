@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from .controller import create_chauffeur, get_chauffeur_by_id, get_all_chauffeurs, update_chauffeur, delete_chauffeur
+from .controller import create_chauffeur, get_chauffeur_by_id, get_all_chauffeurs, get_voyages_par_chauffeur, update_chauffeur, delete_chauffeur
 
 from .models import ChauffeurCreate
 from .models import ChauffeurUpdate
@@ -33,3 +33,7 @@ def modifier_chauffeur(id_chauffeur: int, data: ChauffeurUpdate, current_user: d
 @router.delete("/delete/{id_chauffeur}")
 def supprimer_chauffeur(id_chauffeur: int, current_user: dict = Depends(get_current_user)):
     return delete_chauffeur(id_chauffeur, current_user)
+
+@router.get("/{id_utilisateur}/voyages")
+def get_chauffeur_voyages(id_utilisateur: int):
+    return get_voyages_par_chauffeur(id_utilisateur)

@@ -11,3 +11,8 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     mail: EmailStr
     mot_de_passe: str
+
+class ChangePasswordRequest(BaseModel):
+    mail: str
+    ancien_mot_de_passe: str
+    nouveau_mot_de_passe: str

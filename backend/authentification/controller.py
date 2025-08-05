@@ -6,12 +6,13 @@ from .utils import hash_password
 from .utils import verify_password
 from .utils import create_access_token
 
-from .models import UserCreate
+from .models import ChangePasswordRequest, UserCreate
 from .models import UserLogin 
 
 def register_user(user: UserCreate):
+    email_normalise = user.mail.strip().lower()
     # Vérifie si l'utilisateur existe déjà
-    existing_user = supabase.table("utilisateur").select("*").eq("mail", user.mail).execute()
+    existing_user = supabase.table("utilisateur").select("*").eq("mail", email_normalise).execute()
     if existing_user.data:
         raise HTTPException(status_code=400, detail="Cet email est déjà utilisé.")
 
@@ -23,7 +24,7 @@ def register_user(user: UserCreate):
         "nom": user.nom,
         "prenom": user.prenom,
         "carte_national": user.carte_national,
-        "mail": user.mail,
+        "mail": email_normalise,
         "mot_de_passe": hashed,
         "role": 'back-office',
         "date_creation": date.today().isoformat()
@@ -56,32 +57,10 @@ def register_user(user: UserCreate):
     }
 
 
-# def login_user(user: UserLogin):
-#     # Chercher l'utilisateur dans la base
-#     response = supabase.table("utilisateur").select("*").eq("mail", user.mail).execute()
-    
-#     if not response.data:
-#         raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect.")
-    
-#     utilisateur = response.data[0]
-    
-#     # Vérifier le mot de passe
-#     if not verify_password(user.mot_de_passe, utilisateur["mot_de_passe"]):
-#         raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect.")
-    
-#     # Ici, on pourrait générer un token JWT si besoin (non inclus ici)
-    
-#     # Retourner les infos utiles sans le mot de passe
-#     utilisateur_sans_mdp = {k: v for k, v in utilisateur.items() if k != "mot_de_passe"}
-    
-#     return {
-#         "message": "Connexion réussie",
-#         "utilisateur": utilisateur_sans_mdp
-#     }
-
 def login_user(user: UserLogin):
+    email_normalise = user.mail.strip().lower()
     # Chercher l'utilisateur
-    response = supabase.table("utilisateur").select("*").eq("mail", user.mail).execute()
+    response = supabase.table("utilisateur").select("*").eq("mail", email_normalise).execute()
     
     if not response.data:
         raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect.")
@@ -107,3 +86,69 @@ def login_user(user: UserLogin):
         "message": "Connexion réussie",
         "utilisateur": utilisateur_sans_mdp
     }
+    
+    
+def login_chauffeur(user: UserLogin):
+    email_normalise = user.mail.strip().lower()
+    # Chercher l'utilisateur
+    response = supabase.table("utilisateur").select("*").eq("mail", email_normalise).execute()
+
+    if not response.data:
+        raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect.")
+
+    utilisateur = response.data[0]
+
+    # Vérifier le rôle
+    if utilisateur["role"] != "chauffeur":
+        raise HTTPException(status_code=403, detail="Accès réservé aux chauffeurs.")
+
+    # Vérifier le mot de passe
+    if not verify_password(user.mot_de_passe, utilisateur["mot_de_passe"]):
+        raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect.")
+
+    # Générer le token JWT
+    token_data = {
+        "id_utilisateur": utilisateur["id_utilisateur"],
+        "mail": utilisateur["mail"],
+        "role": utilisateur["role"]
+    }
+    token = create_access_token(token_data)
+
+    # Mettre à jour le token dans la base
+    supabase.table("utilisateur").update({"token": token}).eq("id_utilisateur", utilisateur["id_utilisateur"]).execute()
+
+    # Retourner les infos utilisateur sans mot de passe
+    utilisateur_sans_mdp = {k: v for k, v in utilisateur.items() if k != "mot_de_passe"}
+    utilisateur_sans_mdp["token"] = token
+
+    return {
+        "message": "Connexion chauffeur réussie",
+        "utilisateur": utilisateur_sans_mdp
+    }
+    
+def change_password(data: ChangePasswordRequest):
+    email_normalise = data.mail.strip().lower()
+
+    # Vérifier si l'utilisateur existe
+    response = supabase.table("utilisateur").select("*").eq("mail", email_normalise).execute()
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé.")
+
+    utilisateur = response.data[0]
+
+    # Vérifier le mot de passe actuel
+    if not verify_password(data.ancien_mot_de_passe, utilisateur["mot_de_passe"]):
+        raise HTTPException(status_code=401, detail="Ancien mot de passe incorrect.")
+
+    # Hacher le nouveau mot de passe
+    hashed_new_password = hash_password(data.nouveau_mot_de_passe)
+
+    # Mettre à jour le mot de passe dans la base
+    supabase.table("utilisateur").update({
+        "mot_de_passe": hashed_new_password
+    }).eq("id_utilisateur", utilisateur["id_utilisateur"]).execute()
+
+    return {
+        "message": "Mot de passe mis à jour avec succès."
+    }
+ 

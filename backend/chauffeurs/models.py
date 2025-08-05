@@ -4,9 +4,9 @@ from typing import Optional
 class ChauffeurCreate(BaseModel):
     nom: str
     prenom: str
-    mail: Optional[str] = None
+    mail: str
     telephone: str
-    mot_de_passe: Optional[str] = None
+    mot_de_passe: str
     carte_national: str
     num_permis: str
     disponibilite: bool
