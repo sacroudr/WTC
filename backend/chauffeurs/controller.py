@@ -316,31 +316,54 @@ def delete_chauffeur(id_chauffeur: int, current_user: dict):
 
 
 # Permet de récupérer les voyages à faire pour un chauffeur donné
-# def get_voyages_par_chauffeur(id_chauffeur: int):
-#     # Requête pour récupérer les voyages où id_chauffeur = id_chauffeur
-#     response = supabase.table("voyage").select("*").eq("id_chauffeur", id_chauffeur).execute()
-
-#     # Vérifier qu'on a bien des données
-#     if not response.data:
-#         raise HTTPException(status_code=404, detail="Aucun voyage trouvé pour ce chauffeur")
-
-#     # Retourner la liste des voyages
-#     return response.data
-
-
 def get_voyages_par_chauffeur(id_utilisateur: int):
-    # 1. Récupérer l'id_chauffeur correspondant à l'id_utilisateur
-    chauffeur_resp = supabase.table("chauffeur").select("id_chauffeur").eq("id_utilisateur", id_utilisateur).execute()
+    try:
+        # 1. Récupération de l'id_chauffeur via id_utilisateur
+        chauffeur_resp = supabase.table("chauffeur").select("id_chauffeur").eq("id_utilisateur", id_utilisateur).execute()
 
-    if not chauffeur_resp.data or len(chauffeur_resp.data) == 0:
-        raise HTTPException(status_code=404, detail="Chauffeur non trouvé pour cet utilisateur")
+        if not chauffeur_resp.data or len(chauffeur_resp.data) == 0:
+            raise HTTPException(status_code=404, detail="Chauffeur non trouvé pour cet utilisateur")
 
-    id_chauffeur = chauffeur_resp.data[0]['id_chauffeur']
+        id_chauffeur = chauffeur_resp.data[0]["id_chauffeur"]
 
-    # 2. Récupérer les voyages liés à cet id_chauffeur
-    voyages_resp = supabase.table("voyage").select("*").eq("id_chauffeur", id_chauffeur).execute()
+        # 2. Récupération des voyages avec jointures : client, utilisateur, camion
+        response = supabase.table("voyage").select("""
+            *,
+            client!voyage_id_client_fkey (
+                id_client,
+                entreprise,
+                utilisateur (
+                    nom
+                )
+            )
+        """).eq("id_chauffeur", id_chauffeur).execute()
 
-    if not voyages_resp.data:
-        raise HTTPException(status_code=404, detail="Aucun voyage trouvé pour ce chauffeur")
+        if not response.data:
+            return {"voyages": []}
 
-    return voyages_resp.data
+        voyages = []
+        for v in response.data:
+            client_data = v.get("client") or {}
+
+            utilisateur_client = client_data.get("utilisateur") or {}
+
+            voyages.append({
+                "id_voyage": v.get("id_voyage"),
+                "id_client": v.get("id_client"),
+                "entreprise": client_data.get("entreprise"),
+                "nom_client": utilisateur_client.get("nom"),
+                "id_chauffeur": v.get("id_chauffeur"),
+                "id_camion": v.get("id_camion"),
+                "numero_voyage": v.get("numero_voyage"),
+                "ice": v.get("ice"),
+                "date_depart": v.get("date_depart"),
+                "heure_depart": v.get("heure_depart"),
+                "adresse_depart": v.get("adresse_depart"),
+                "adresse_arrive": v.get("adresse_arrive"),
+                "statut": v.get("statut")
+            })
+
+        return {"voyages": voyages}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération des voyages du chauffeur : {str(e)}")

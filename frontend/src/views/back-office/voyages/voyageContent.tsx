@@ -23,6 +23,7 @@ const VoyageContent: React.FC = () => {
     id_camion: '',
     ice: '',
     date_depart: '',
+    heure_depart: '',
     adresse_depart: '',
     adresse_arrive: '',
   });
@@ -79,7 +80,8 @@ const VoyageContent: React.FC = () => {
       id_chauffeur: parseInt(formData.id_chauffeur),
       ...(isNaN(camionIdParsed) ? {} : { id_camion: camionIdParsed }),
       ice: formData.ice,
-      date_depart: formData.date_depart.split('T')[0],
+      date_depart: formData.date_depart,
+      heure_depart: formData.heure_depart,
       adresse_depart: formData.adresse_depart,
       adresse_arrive: formData.adresse_arrive,
     };
@@ -100,6 +102,7 @@ const VoyageContent: React.FC = () => {
       id_camion: '',
       ice: '',
       date_depart: '',
+      heure_depart: '',
       adresse_depart: '',
       adresse_arrive: '',
     });
@@ -260,17 +263,31 @@ const VoyageContent: React.FC = () => {
           size="small"
         />
         </Box>   
-
-        <TextField
+        
+        <Box display="flex" gap={2}>
+          <TextField
           fullWidth
           label="Date de départ"
-          type="datetime-local"
+          type="date"
           name="date_depart"
           value={formData.date_depart}
           onChange={handleChange}
           size="small"
           InputLabelProps={{ shrink: true }}
         />
+
+        <TextField
+          fullWidth
+          label="Heure de départ"
+          type="time"
+          name="heure_depart"
+          value={formData.heure_depart}
+          onChange={handleChange}
+          size="small"
+          InputLabelProps={{ shrink: true }}
+        />
+        </Box>
+        
 
         <Button
           variant="contained"

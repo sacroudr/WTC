@@ -126,6 +126,7 @@ def get_all_voyages():
                 "numero_voyage": v.get("numero_voyage"),
                 "ice": v.get("ice"),
                 "date_depart": v.get("date_depart"),
+                "heure_depart": v.get("heure_depart"),
                 "adresse_depart": v.get("adresse_depart"),
                 "adresse_arrive": v.get("adresse_arrive"),
                 "statut": v.get("statut")
@@ -252,6 +253,7 @@ def get_voyages_by_client(id_client: int):
                 "matricule": camion_data.get("matricule"),
                 "numero_voyage": v.get("numero_voyage"),
                 "ice": v.get("ice"),
+                "heure_depart": v.get("heure_depart"),
                 "date_depart": v.get("date_depart"),
                 "adresse_depart": v.get("adresse_depart"),
                 "adresse_arrive": v.get("adresse_arrive"),
@@ -324,6 +326,7 @@ def get_voyage_by_client_and_voyage_id(id_client: int, id_voyage: int):
             "numero_voyage": v["numero_voyage"],
             "ice": v["ice"],
             "date_depart": v["date_depart"],
+            "heure_depart": v["heure_depart"],
             "adresse_depart": v["adresse_depart"],
             "adresse_arrive": v["adresse_arrive"],
             "statut": v["statut"]
@@ -454,6 +457,7 @@ def get_voyages_by_id(id_voyage: int):
                 "numero_voyage": v.get("numero_voyage"),
                 "ice": v.get("ice"),
                 "date_depart": v.get("date_depart"),
+                "heure_depart": v.get("heure_depart"),
                 "adresse_depart": v.get("adresse_depart"),
                 "adresse_arrive": v.get("adresse_arrive"),
                 "statut": v.get("statut")
@@ -550,7 +554,8 @@ def create_voyage(data: VoyageCreate, current_user: dict):
             "id_camion": data.id_camion,
             "ice": data.ice,
             "date_depart": data.date_depart.isoformat(),
-            "adresse_depart": data.adresse_depart,
+            "heure_depart": data.heure_depart.isoformat(),
+            "adresse_depart": data.adresse_depart,            
             "adresse_arrive": data.adresse_arrive,
             "statut": "Validé"
         }

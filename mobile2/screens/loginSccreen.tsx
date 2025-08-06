@@ -3,31 +3,28 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   Alert,
   Image,
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
-  Dimensions,
 } from 'react-native';
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { API_URL } from '@env';
-import { colors, spacing, fontSizes, fonts } from '../theme';
-import { Checkbox } from 'react-native-paper';
+import { colors } from '../theme';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { loginScreenStyles as styles } from '../style/loginScreen.styles';
+import { loginChauffeur } from '../api/authapi';
 
 // Logo WTC
 const WTCLogo = require('../assets/WTC_LOGO_JPG_v2_removed.png');
 
-const { width } = Dimensions.get('window');
 
 type RootStackParamList = {
   Login: undefined;
-  Camions: undefined;
+  Voyages: undefined;
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
@@ -36,36 +33,38 @@ export default function LoginScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [mail, setmail] = useState('');
   const [mot_de_passe, set_mot_de_passe] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
+    if (!mail || !mot_de_passe) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
+      return;
+    }
+
     setLoading(true);
     try {
-      console.log('API_URL =', API_URL);
-      const res = await axios.post(`${API_URL}/utilisateurs/login/chauffeur`, {
-        mail: mail.trim().toLowerCase(),
-        mot_de_passe: mot_de_passe,
-      });
+      const utilisateur = await loginChauffeur(mail, mot_de_passe);
 
-      const token = res.data.utilisateur.token;
+      const token = utilisateur.token;
       if (!token) {
         Alert.alert('Erreur', "Jeton d'accès manquant.");
-        setLoading(false);
         return;
       }
 
       await AsyncStorage.setItem('token', token);
-      navigation.replace('Camions');
-    } catch (error) {
+      setmail('');
+      set_mot_de_passe('');
+      navigation.replace('Voyages');
+    } catch (error: any) {
       console.error(error);
-      Alert.alert('Erreur', 'Email ou mot de passe incorrect.');
+      const message = error?.response?.data?.detail || 'Email ou mot de passe incorrect.';
+      Alert.alert('Erreur', message);
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer} style={styles.container}>
       {/* Header simple */}
@@ -124,24 +123,37 @@ export default function LoginScreen() {
           </View>
 
           {/* Bouton de connexion */}
-          <TouchableOpacity
-            style={[styles.loginButton, loading && styles.buttonDisabled]}
-            onPress={handleLogin}
-            disabled={loading}
-            activeOpacity={0.8}
-          >
-            <View style={styles.buttonContent}>
-              {loading ? (
-                <ActivityIndicator color="#fff" size="small" />
-              ) : (
-                <>
-                  <Text style={styles.buttonText}>Se connecter</Text>
-                  <Icon name="arrow-forward" size={20} color="#fff" style={styles.buttonIcon} />
-                </>
-              )}
-            </View>
-          </TouchableOpacity>
-
+          <View style={styles.loginButtonWrapper}>
+            <LinearGradient
+              colors={
+                !mail || !mot_de_passe
+                  ? ['#a0a0a0', '#a0a0a0'] // gris si désactivé
+                  : ['#E42422', '#3168B1'] // couleurs normales si activé
+              }
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.loginButton}
+            >
+              <TouchableOpacity
+                disabled={loading || !mail || !mot_de_passe}
+                onPress={handleLogin}
+                style={[
+                  styles.buttonContent,
+                  (loading || !mail || !mot_de_passe) && styles.buttonDisabled,
+                ]}
+                activeOpacity={0.8}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <>
+                    <Text style={styles.buttonText}>Se connecter</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </LinearGradient>
+          </View>
+          
           {/* Divider */}
           <View style={styles.dividerContainer}>
             <View style={styles.divider} />
@@ -160,155 +172,3 @@ export default function LoginScreen() {
     </ScrollView>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center', // ✅ centre verticalement
-  },
-  headerContainer: {
-    marginTop:40,
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    paddingTop: spacing.xLarge,
-    paddingBottom: spacing.medium,
-  },
-  logoContainer: {
-    alignItems: 'center',
-  },
-  logoWrapper: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: colors.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.medium,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  logo: {
-    width: 80,
-    height: 80,
-  },
-  welcomeText: {
-    fontSize: fontSizes.xLarge,
-    fontFamily: fonts.heading,
-    color: colors.text,
-    marginBottom: spacing.xSmall,
-  },
-  subtitleText: {
-    fontSize: fontSizes.medium,
-    fontFamily: fonts.regular,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  formContainer: {
-    flex: 1,
-    paddingHorizontal: spacing.large,
-    alignItems: 'center', // ✅ centre horizontalement
-    marginTop: spacing.medium,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: 20,
-    padding: spacing.large,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    width: '100%',
-    maxWidth: 400, // ✅ largeur max pour limiter l'étalement
-  },
-  inputContainer: {
-    marginBottom: spacing.medium,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-    paddingHorizontal: spacing.medium,
-    paddingVertical: spacing.small,
-  },
-  inputIcon: {
-    marginRight: spacing.small,
-  },
-  input: {
-    flex: 1,
-    fontSize: fontSizes.medium,
-    fontFamily: fonts.regular,
-    color: colors.text,
-    paddingVertical: spacing.small,
-  },
-  eyeIcon: {
-    paddingLeft: spacing.small,
-  },
-  helpText: {
-    fontSize: fontSizes.small,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    fontFamily: fonts.regular,
-    lineHeight: 20,
-  },
-  loginButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: spacing.medium,
-    paddingHorizontal: spacing.large,
-    elevation: 3,
-    shadowColor: colors.primary,
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    marginBottom: spacing.large,
-  },
-  buttonDisabled: {
-    backgroundColor: colors.primaryLight,
-    elevation: 1,
-    shadowOpacity: 0.1,
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: fontSizes.medium,
-    fontFamily: fonts.bold,
-    marginRight: spacing.small,
-  },
-  buttonIcon: {
-    marginLeft: spacing.small,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.medium,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#DEE2E6',
-  },
-  dividerText: {
-    marginHorizontal: spacing.small,
-    color: colors.textSecondary,
-    fontFamily: fonts.regular,
-  },
-  alternativeOptions: {
-    marginTop: spacing.small,
-  },
-});
