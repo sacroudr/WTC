@@ -4,8 +4,8 @@ export const voyageScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'rgba(49, 104, 177, 0.11)',
-    paddingHorizontal: 16,
-    paddingTop: 40,
+    paddingHorizontal: 20,
+    paddingTop: 50,
   },
   center: {
     flex: 1,
@@ -83,7 +83,6 @@ export const voyageScreenStyles = StyleSheet.create({
   iconWithText: {
     flexDirection: 'row',
     alignItems: 'center',
-    // gap: 6, // ou paddingRight/marginRight si pas supporté
     marginBottom: 4,
   },
     timeText: {

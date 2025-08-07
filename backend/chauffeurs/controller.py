@@ -315,52 +315,127 @@ def delete_chauffeur(id_chauffeur: int, current_user: dict):
 
 
 
-# Permet de récupérer les voyages à faire pour un chauffeur donné
+# # Permet de récupérer les voyages à faire pour un chauffeur donné
+# def get_voyages_par_chauffeur(id_utilisateur: int):
+#     try:
+#         # 1. Récupération de l'id_chauffeur via id_utilisateur
+#         chauffeur_resp = supabase.table("chauffeur").select("id_chauffeur").eq("id_utilisateur", id_utilisateur).execute()
+
+#         if not chauffeur_resp.data or len(chauffeur_resp.data) == 0:
+#             raise HTTPException(status_code=404, detail="Chauffeur non trouvé pour cet utilisateur")
+
+#         id_chauffeur = chauffeur_resp.data[0]["id_chauffeur"]
+
+#         # 2. Récupération des voyages avec jointures : client, utilisateur, camion
+#         response = supabase.table("voyage").select("""
+#             *,
+#             client!voyage_id_client_fkey (
+#                 id_client,
+#                 entreprise,
+#                 utilisateur (
+#                     nom
+#                 )
+#             )
+#         """).eq("id_chauffeur", id_chauffeur).execute()
+
+#         if not response.data:
+#             return {"voyages": []}
+
+#         voyages = []
+#         for v in response.data:
+#             client_data = v.get("client") or {}
+
+#             utilisateur_client = client_data.get("utilisateur") or {}
+
+#             voyages.append({
+#                 "id_voyage": v.get("id_voyage"),
+#                 "id_client": v.get("id_client"),
+#                 "entreprise": client_data.get("entreprise"),
+#                 "nom_client": utilisateur_client.get("nom"),
+#                 "id_chauffeur": v.get("id_chauffeur"),
+#                 "id_camion": v.get("id_camion"),
+#                 "numero_voyage": v.get("numero_voyage"),
+#                 "ice": v.get("ice"),
+#                 "date_depart": v.get("date_depart"),
+#                 "heure_depart": v.get("heure_depart"),
+#                 "adresse_depart": v.get("adresse_depart"),
+#                 "adresse_arrive": v.get("adresse_arrive"),
+#                 "statut": v.get("statut")
+#             })
+
+#         return {"voyages": voyages}
+
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération des voyages du chauffeur : {str(e)}")
+
 def get_voyages_par_chauffeur(id_utilisateur: int):
     try:
-        # 1. Récupération de l'id_chauffeur via id_utilisateur
+        # 1. Récupérer l'ID du chauffeur depuis l'utilisateur
         chauffeur_resp = supabase.table("chauffeur").select("id_chauffeur").eq("id_utilisateur", id_utilisateur).execute()
 
-        if not chauffeur_resp.data or len(chauffeur_resp.data) == 0:
+        if not chauffeur_resp.data:
             raise HTTPException(status_code=404, detail="Chauffeur non trouvé pour cet utilisateur")
 
         id_chauffeur = chauffeur_resp.data[0]["id_chauffeur"]
 
-        # 2. Récupération des voyages avec jointures : client, utilisateur, camion
-        response = supabase.table("voyage").select("""
-            *,
-            client!voyage_id_client_fkey (
+        # 2. Récupérer les livraisons avec leurs voyages associés
+        livraisons_resp = supabase.table("livraison").select("""
+            id_livraison,
+            statut,
+            localisation,
+            date_maj,
+            voyage (
+                id_voyage,
                 id_client,
-                entreprise,
-                utilisateur (
-                    nom
+                id_chauffeur,
+                id_camion,
+                ice,
+                date_depart,
+                heure_depart,
+                adresse_depart,
+                adresse_arrive,
+                statut,
+                numero_voyage,
+                client!voyage_id_client_fkey (
+                    entreprise,
+                    utilisateur (
+                        nom
+                    )
                 )
             )
-        """).eq("id_chauffeur", id_chauffeur).execute()
+        """).execute()
 
-        if not response.data:
+        if not livraisons_resp.data:
             return {"voyages": []}
 
         voyages = []
-        for v in response.data:
-            client_data = v.get("client") or {}
+        for l in livraisons_resp.data:
+            voyage = l.get("voyage")
+            if not voyage or voyage.get("id_chauffeur") != id_chauffeur:
+                continue
 
+            client_data = voyage.get("client") or {}
             utilisateur_client = client_data.get("utilisateur") or {}
 
             voyages.append({
-                "id_voyage": v.get("id_voyage"),
-                "id_client": v.get("id_client"),
+                "id_livraison": l.get("id_livraison"),
+                "livraison_statut": l.get("statut"),
+                "localisation": l.get("localisation"),
+                "date_maj": l.get("date_maj"),
+
+                "id_voyage": voyage.get("id_voyage"),
+                "numero_voyage": voyage.get("numero_voyage"),
+                "statut_voyage": voyage.get("statut"),
+                "ice": voyage.get("ice"),
+                "date_depart": voyage.get("date_depart"),
+                "heure_depart": voyage.get("heure_depart"),
+                "adresse_depart": voyage.get("adresse_depart"),
+                "adresse_arrive": voyage.get("adresse_arrive"),
+                "id_camion": voyage.get("id_camion"),
+                "id_client": voyage.get("id_client"),
+
                 "entreprise": client_data.get("entreprise"),
-                "nom_client": utilisateur_client.get("nom"),
-                "id_chauffeur": v.get("id_chauffeur"),
-                "id_camion": v.get("id_camion"),
-                "numero_voyage": v.get("numero_voyage"),
-                "ice": v.get("ice"),
-                "date_depart": v.get("date_depart"),
-                "heure_depart": v.get("heure_depart"),
-                "adresse_depart": v.get("adresse_depart"),
-                "adresse_arrive": v.get("adresse_arrive"),
-                "statut": v.get("statut")
+                "nom_client": utilisateur_client.get("nom")
             })
 
         return {"voyages": voyages}

@@ -1,52 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { voyageScreenStyles as styles } from '../style/voyageScreen.styles';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { Voyage } from '../types/voyage';
-import type { Utilisateur } from '../types/utilisateur';
-import Header from './header';
-import Planning from './planning';
-import { getCurrentUser, getVoyagesByChauffeur } from '../api/voyageScreenApi';
+import * as Location from 'expo-location';
 
+import Header from './header';
+import Planning from './planning';import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import { getVoyagesByChauffeur } from '../api/voyageScreenApi';
+import { useCurrentUser } from '../hooks/useCurrentUser';
+import { getLastScreen } from '../helpers/progressTracker';
+import { RootStackParamList } from '../navigation/types';
+
+// type RootStackParamList = {
+//   Voyages: undefined;
+//   Documents: { id_livraison: number };
+//   ChargementCamion: { id_livraison: number }; 
+// };
 
 export default function VoyageScreen() {
-  const [voyages, setVoyages] = useState<Voyage[]>([]);
-  const [user, setUser] = useState<Utilisateur | null>(null);
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  const [loading, setLoading] = useState<boolean>(true);
+  const [voyages, setVoyages] = useState<Voyage[]>([]);
+
+  const { user, loadingUser } = useCurrentUser();
+
+  const [loadingVoyages, setLoadingVoyages] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   
-  const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const loadUser = async () => {
-    setLoadingUser(true);
-    try {
-      const fetchedUser = await getCurrentUser();
-      setUser(fetchedUser);
-    } catch (e) {
-      console.error("Erreur récupération utilisateur", e);
-    } finally {
-      setLoadingUser(false);
-    }
-  };
-
   const loadVoyages = async () => {
-    setLoading(true);
+    setLoadingVoyages(true);
     try {
       const fetchedVoyages = await getVoyagesByChauffeur();
       setVoyages(fetchedVoyages);
     } catch (err) {
       setError("Erreur lors du chargement des voyages.");
     } finally {
-      setLoading(false);
+      setLoadingVoyages(false);
     }
   };
-
-  useEffect(() => {
-    loadUser();
-  }, []);
 
   useEffect(() => {
     if (user?.id_utilisateur) {
@@ -63,7 +59,7 @@ export default function VoyageScreen() {
     );
   });
 
-  if (loading || loadingUser) {
+  if (loadingVoyages || loadingUser) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" />
@@ -79,10 +75,27 @@ export default function VoyageScreen() {
     );
   }
 
-  const handleStartVoyage = (id_voyage: number) => {
-  // Tu peux naviguer ou changer le statut ici
-  console.log("Commencer le voyage ID:", id_voyage);
-  // navigation.navigate('DetailVoyage', { id_voyage });
+  const handleStartVoyage = async (id_livraison: number) => {
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission refusée', 'La localisation est nécessaire pour commencer le voyage.');
+      return;
+    }
+
+    const lastScreen = await getLastScreen(id_livraison);
+
+    if (lastScreen === 'ChargementCamion') {
+      navigation.navigate('ChargementCamion', { id_livraison });
+    } else if (lastScreen === 'Documents') {
+      navigation.navigate('Documents', { id_livraison });
+    } else {
+      // Aucun historique, début du parcours
+      navigation.navigate('Documents', { id_livraison });
+    }
+  } catch (error: any) {
+    Alert.alert('Erreur', error.message || 'Impossible de récupérer la localisation.');
+  }
 };
 
 
@@ -96,7 +109,7 @@ export default function VoyageScreen() {
 
       <FlatList
         data={voyagesFiltres}
-        keyExtractor={(item) => item.id_voyage.toString()}
+        keyExtractor={(item) => item.id_livraison.toString()}
         renderItem={({ item }) => (
           <View style={styles.voyageCard}>
             <View style={styles.voyageHeader}>
@@ -135,7 +148,7 @@ export default function VoyageScreen() {
                   style={styles.startButton}
                 >
                   <TouchableOpacity
-                    onPress={() => handleStartVoyage(item.id_voyage)}
+                    onPress={() => handleStartVoyage(item.id_livraison)}
                     style={styles.startButtonTouchable}
                     activeOpacity={0.7}
                   >

@@ -13,19 +13,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { colors } from '../theme';
+import { colors } from '../style/theme';
 import Icon from 'react-native-vector-icons/Ionicons';
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as SecureStore from 'expo-secure-store';
 import { loginScreenStyles as styles } from '../style/loginScreen.styles';
 import { loginChauffeur } from '../api/authapi';
+import { RootStackParamList } from '../navigation/types';
 
 // Logo WTC
 const WTCLogo = require('../assets/WTC_LOGO_JPG_v2_removed.png');
 
 
-type RootStackParamList = {
-  Login: undefined;
-  Voyages: undefined;
-};
+// type RootStackParamList = {
+//   Login: undefined;
+//   Voyages: undefined;
+// };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -35,6 +38,24 @@ export default function LoginScreen() {
   const [mot_de_passe, set_mot_de_passe] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleBiometricAuth = async () => {
+    const biometricAuth = await LocalAuthentication.authenticateAsync({
+      promptMessage: 'Authentification biométrique',
+      fallbackLabel: 'Utiliser le code',
+    });
+
+    if (biometricAuth.success) {
+      const savedToken = await SecureStore.getItemAsync('fingerprint_token');
+      if (savedToken) {
+        await AsyncStorage.setItem('token', savedToken); // 💾 restaurer la session
+        navigation.reset({ index: 0, routes: [{ name: 'Voyages' }] }); // ou 'Accueil', ou autre
+      } else {
+        Alert.alert("Erreur", "Aucun token biométrique enregistré.");
+      }
+    }
+  };
+
 
   const handleLogin = async () => {
     if (!mail || !mot_de_passe) {
@@ -123,16 +144,16 @@ export default function LoginScreen() {
           </View>
 
           {/* Bouton de connexion */}
-          <View style={styles.loginButtonWrapper}>
+          <View style={[styles.loginButtonWrapper, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
             <LinearGradient
               colors={
                 !mail || !mot_de_passe
-                  ? ['#a0a0a0', '#a0a0a0'] // gris si désactivé
-                  : ['#E42422', '#3168B1'] // couleurs normales si activé
+                  ? ['#a0a0a0', '#a0a0a0']
+                  : ['#E42422', '#3168B1']
               }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={styles.loginButton}
+              style={[styles.loginButton, { flex: 1, marginRight: 10 }]}
             >
               <TouchableOpacity
                 disabled={loading || !mail || !mot_de_passe}
@@ -146,12 +167,27 @@ export default function LoginScreen() {
                 {loading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <>
-                    <Text style={styles.buttonText}>Se connecter</Text>
-                  </>
+                  <Text style={styles.buttonText}>Se connecter</Text>
                 )}
               </TouchableOpacity>
             </LinearGradient>
+                
+            <LinearGradient
+              colors={
+                ['#E42422', '#3168B1']
+              }
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{ borderRadius: 20, padding: 10 }}
+            >
+              <TouchableOpacity
+                onPress={handleBiometricAuth}
+                activeOpacity={0.8}
+              >
+                <Icon name="finger-print-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </LinearGradient>
+
           </View>
           
           {/* Divider */}

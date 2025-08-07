@@ -25,11 +25,9 @@ export const planningStyles = StyleSheet.create({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  // width: '100%',
-  // paddingHorizontal: 20, // pour ne pas coller au bord
   },
   arrowButton: {
-    width: 40, // largeur fixe pour les flèches
+    width: 40,
     alignItems: 'center',
   },
   dateContainer: {

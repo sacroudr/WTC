@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing, fontSizes, fonts } from '../theme';
+import { colors, spacing, fontSizes, fonts } from './theme';
 
 export const loginScreenStyles = StyleSheet.create({
   container: {
