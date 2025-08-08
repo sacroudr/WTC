@@ -110,6 +110,8 @@ def login_chauffeur(user: UserLogin):
     token_data = {
         "id_utilisateur": utilisateur["id_utilisateur"],
         "mail": utilisateur["mail"],
+        "nom": utilisateur["nom"],
+        "prenom": utilisateur["prenom"],
         "role": utilisateur["role"]
     }
     token = create_access_token(token_data)

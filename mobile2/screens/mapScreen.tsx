@@ -1,22 +1,22 @@
-// ChargementCamionScreen.tsx
+// MapScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
-import { chargementCScreenStyles as styles } from '../style/chargementCScreen.styles';
+import { mapScreenStyles as styles } from '../style/mapScreen.styles';
 import { addSuiviLivraison } from '../api/suiviApi';
 import Header from './header';
 import * as Location from 'expo-location';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { saveLastScreen } from '../helpers/progressTracker';
+import { clearProgress, saveLastScreen } from '../helpers/progressTracker';
 import { RootStackParamList } from '../navigation/types';
 
-type ChargementCamionRouteParam = {
-  ChargementCamion: { id_livraison: number };
+type MapRouteParam = {
+  Map: { id_livraison: number };
 };
 
-export default function ChargementCamionScreen() {
+export default function MapScreen() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<ChargementCamionRouteParam, 'ChargementCamion'>>();
+  const route = useRoute<RouteProp<MapRouteParam, 'Map'>>();
   const { id_livraison } = route.params;
 
   const [loading, setLoading] = useState(false);
@@ -31,15 +31,17 @@ export default function ChargementCamionScreen() {
       // Envoi au backend
       await addSuiviLivraison(
         id_livraison,
-        'Chargement du camion',
+        'Livraison effectuée',
         localisation,
         location.coords.latitude,
         location.coords.longitude,
-        'Le camion a été chargé.'
+        'La livraison a été effectuée.'
       );
 
+      await clearProgress(id_livraison);
+
       Alert.alert('Succès', 'Suivi ajouté avec votre position.');
-      navigation.navigate('Port', { id_livraison });
+      navigation.navigate('Voyages');
     } catch (error: any) {
       Alert.alert('Erreur', error.message || 'Une erreur est survenue');
     } finally {
@@ -53,7 +55,7 @@ export default function ChargementCamionScreen() {
 
       <View style={styles.centerContainer}>
         <Text style={styles.questionText}>
-          Le camion est-il chargé?
+          La livraison est-elle faite
         </Text>
 
         <View style={styles.buttonContainer}>
@@ -68,7 +70,7 @@ export default function ChargementCamionScreen() {
           <TouchableOpacity
             style={[styles.button, styles.buttonSecondary]}
             onPress={async () => {
-              await saveLastScreen(id_livraison, 'ChargementCamion');
+              await saveLastScreen(id_livraison, 'Map');
               navigation.navigate('Voyages');
             }}
           >

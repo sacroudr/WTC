@@ -24,12 +24,6 @@ import { RootStackParamList } from '../navigation/types';
 // Logo WTC
 const WTCLogo = require('../assets/WTC_LOGO_JPG_v2_removed.png');
 
-
-// type RootStackParamList = {
-//   Login: undefined;
-//   Voyages: undefined;
-// };
-
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
 export default function LoginScreen() {

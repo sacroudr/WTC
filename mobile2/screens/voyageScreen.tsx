@@ -10,22 +10,13 @@ import Header from './header';
 import Planning from './planning';import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { getVoyagesByChauffeur } from '../api/voyageScreenApi';
-import { useCurrentUser } from '../hooks/useCurrentUser';
 import { getLastScreen } from '../helpers/progressTracker';
 import { RootStackParamList } from '../navigation/types';
-
-// type RootStackParamList = {
-//   Voyages: undefined;
-//   Documents: { id_livraison: number };
-//   ChargementCamion: { id_livraison: number }; 
-// };
 
 export default function VoyageScreen() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const [voyages, setVoyages] = useState<Voyage[]>([]);
-
-  const { user, loadingUser } = useCurrentUser();
 
   const [loadingVoyages, setLoadingVoyages] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,10 +36,8 @@ export default function VoyageScreen() {
   };
 
   useEffect(() => {
-    if (user?.id_utilisateur) {
-      loadVoyages();
-    }
-  }, [user]);
+    loadVoyages();
+  }, []);
 
   const voyagesFiltres = voyages.filter(voyage => {
     const voyageDate = new Date(voyage.date_depart);
@@ -59,7 +48,7 @@ export default function VoyageScreen() {
     );
   });
 
-  if (loadingVoyages || loadingUser) {
+  if (loadingVoyages) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" />
@@ -89,7 +78,11 @@ export default function VoyageScreen() {
       navigation.navigate('ChargementCamion', { id_livraison });
     } else if (lastScreen === 'Documents') {
       navigation.navigate('Documents', { id_livraison });
-    } else {
+    } else if (lastScreen === 'Port') {
+      navigation.navigate('Port', { id_livraison });
+    }else if (lastScreen === 'Map') {
+      navigation.navigate('Map', { id_livraison });
+    }else {
       // Aucun historique, début du parcours
       navigation.navigate('Documents', { id_livraison });
     }
@@ -101,7 +94,7 @@ export default function VoyageScreen() {
 
   return (
     <View style={styles.container}>
-      <Header user={user} />
+      <Header />
 
       <Planning onDateChange={(newDate) => setSelectedDate(newDate)} />
 

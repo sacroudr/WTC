@@ -47,12 +47,14 @@ from datetime import datetime
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail=str(e))
 
-def add_suivi(id_livraison: int, statut: str, localisation: str, commentaire: str = ""):
+def add_suivi(id_livraison: int, statut: str, localisation: str,latitude:float, longitude:float, commentaire: str = ""):
     try:
         suivi_data = {
             "id_livraison": id_livraison,
             "statut": statut,
             "localisation": localisation,
+            "latitude": latitude,
+            "longitude": longitude,
             "date_maj": datetime.utcnow().isoformat(),
             "commentaire": commentaire
         }
@@ -67,6 +69,8 @@ def add_suivi(id_livraison: int, statut: str, localisation: str, commentaire: st
         supabase.table("livraison").update({
             "statut": statut,
             "localisation": localisation,
+            "latitude": latitude,
+            "longitude": longitude,
             "date_maj": datetime.utcnow().isoformat()
         }).eq("id_livraison", id_livraison).execute()
 

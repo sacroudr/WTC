@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { documentScreenStyles as styles } from '../style/documentScreen.styles';
 import Header from './header';
-import { useCurrentUser } from '../hooks/useCurrentUser';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Location from 'expo-location';
 import { addSuiviLivraison } from '../api/suiviApi';
@@ -14,17 +13,10 @@ type DocumentsRouteParam = {
   Documents: { id_livraison: number };
 };
 
-// type RootStackParamList = {
-//   Voyages: undefined;
-//   Documents: { id_livraison: number };
-//   ChargementCamion: { id_livraison: number };
-// };
-
 export default function DocumentScreen() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<DocumentsRouteParam, 'Documents'>>();
   const { id_livraison } = route.params;
-  const { user, loadingUser } = useCurrentUser();
 
   const [loading, setLoading] = useState(false);
 
@@ -40,6 +32,8 @@ export default function DocumentScreen() {
         id_livraison,
         'Pris en charge des documents',
         localisation,
+        location.coords.latitude,
+        location.coords.longitude,
         'Le chauffeur a pris en charge les documents.'
       );
 
@@ -52,17 +46,10 @@ export default function DocumentScreen() {
     }
   };
 
-  if (loadingUser) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#3168B1" />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
-      <Header user={user} />
+      <Header />
 
       <View style={styles.centerContainer}>
         <Text style={styles.questionText}>

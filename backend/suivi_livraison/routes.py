@@ -18,6 +18,8 @@ def add_suivi_livraison(data: SuiviCreate):
         id_livraison=data.id_livraison,
         statut=data.statut,
         localisation=data.localisation,
+        latitude=data.latitude,
+        longitude=data.longitude,
         commentaire=data.commentaire
     )
     

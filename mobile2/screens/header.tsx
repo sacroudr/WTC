@@ -1,43 +1,53 @@
-// components/Header.tsx
-import React from 'react';
+// // components/Header.tsx
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { headerStyles  as styles } from '../style/header.styles';
-import type { Utilisateur } from '../types/utilisateur';
+import { headerStyles as styles } from '../style/header.styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
+import {jwtDecode} from 'jwt-decode';
 
-interface HeaderProps {
-  user: Utilisateur | null;
+interface DecodedToken {
+  id_utilisateur: number;
+  prenom: string;
+  nom: string;
+  // Ajoute d'autres champs si nécessaire
 }
 
-const Header: React.FC<HeaderProps> = ({ user }) => {
+const Header: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const [user, setUser] = useState<DecodedToken | null>(null);
 
-  // const handleLogout = async () => {
-  //   try {
-  //     await AsyncStorage.removeItem('token');
-  //     navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
-  //   } catch (error) {
-  //     console.error('Erreur lors de la déconnexion :', error);
-  //   }
-  // };
+  useEffect(() => {
+    const fetchUserFromToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          const decoded: DecodedToken = jwtDecode(token);
+          setUser(decoded);
+        }
+      } catch (error) {
+        console.error('Erreur lors du décodage du token :', error);
+      }
+    };
+
+    fetchUserFromToken();
+  }, []);
+
   const handleLogout = async () => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    if (token) {
-      await SecureStore.setItemAsync('fingerprint_token', token); // 🔐 sauvegarde sécurisée
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        await SecureStore.setItemAsync('fingerprint_token', token);
+      }
+      await AsyncStorage.removeItem('token');
+      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion :', error);
     }
-
-    await AsyncStorage.removeItem('token'); // 🔁 logout "logique", token principal supprimé
-
-    navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
-  } catch (error) {
-    console.error('Erreur lors de la déconnexion :', error);
-  }
-};
+  };
 
   return (
     <View style={styles.header}>
@@ -46,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
       </View>
       <View style={styles.userInfo}>
         <Text style={styles.userName}>
-          {user ? `${user.prenom} ${user.nom}` : "Utilisateur"}
+          {user ? `${user.prenom} ${user.nom}` : 'Utilisateur'}
         </Text>
         <Text style={styles.roleText}>Chauffeur</Text>
       </View>

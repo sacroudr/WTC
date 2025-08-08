@@ -442,3 +442,36 @@ def get_voyages_par_chauffeur(id_utilisateur: int):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération des voyages du chauffeur : {str(e)}")
+    
+def get_itineraire_chauffeur(id_utilisateur: int):
+    try:
+        # 1. Récupérer l'ID du chauffeur
+        chauffeur_resp = supabase.table("chauffeur").select("id_chauffeur").eq("id_utilisateur", id_utilisateur).single().execute()
+        if not chauffeur_resp.data:
+            raise HTTPException(status_code=404, detail="Chauffeur non trouvé")
+
+        id_chauffeur = chauffeur_resp.data["id_chauffeur"]
+
+        # 2. Récupérer le voyage en cours du chauffeur
+        voyage_resp = supabase.table("voyage").select("*").eq("id_chauffeur", id_chauffeur).eq("statut", "Départ port").single().execute()
+        if not voyage_resp.data:
+            raise HTTPException(status_code=404, detail="Aucun voyage en cours pour ce chauffeur")
+
+        voyage = voyage_resp.data
+        id_voyage = voyage["id_voyage"]
+
+        # 3. Récupérer les adresses des livraisons liées à ce voyage
+        livraisons_resp = supabase.table("livraison").select("id_livraison, localisation").eq("id_voyage", id_voyage).execute()
+        livraisons = livraisons_resp.data or []
+
+        adresses = [l["localisation"] for l in livraisons if l.get("localisation")]
+
+        return {
+            "id_voyage": id_voyage,
+            "adresse_depart": voyage.get("adresse_depart"),
+            "adresse_arrivee": voyage.get("adresse_arrive"),
+            "livraisons": adresses  # liste des points intermédiaires
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération de l'itinéraire : {str(e)}")
